@@ -1,0 +1,11 @@
+patient_id,name,age,gender,blood_group,department,diagnosis,heart_rate,blood_pressure,temperature,oxygen_level,bed_no,status
+P001,John Smith,45,Male,O+,Cardiology,Hypertension,82,120/80,98.6,98,B101,Stable
+P002,Emily Johnson,63,Female,A+,Neurology,Stroke Recovery,75,130/85,99.1,96,B102,Observation
+P003,Michael Brown,28,Male,B+,Orthopedics,Fracture,88,118/78,98.4,99,B103,Stable
+P004,Sophia Davis,54,Female,AB+,ICU,Pneumonia,102,140/90,101.2,91,ICU01,Critical
+P005,David Wilson,36,Male,O-,General Medicine,Fever,90,122/80,100.4,97,B104,Stable
+P006,Olivia Taylor,70,Female,A-,Cardiology,Heart Disease,78,135/88,98.9,95,B105,Observation
+P007,James Anderson,51,Male,B-,ICU,Respiratory Failure,110,145/92,101.8,88,ICU02,Critical
+P008,Emma Thomas,41,Female,O+,Dermatology,Skin Infection,76,118/76,98.2,99,B106,Stable
+P009,Daniel Jackson,67,Male,A+,Neurology,Parkinson's Disease,74,128/84,98.5,97,B107,Observation
+P010,Ava White,32,Female,B+,General Medicine,Migraine,80,116/75,98.3,99,B108,Stable
