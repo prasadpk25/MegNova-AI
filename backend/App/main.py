@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from App.api import chat
 
 from App.database.database import Base, engine
 
@@ -78,3 +79,4 @@ def health():
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse("App/static/favicon.ico")
+app.include_router(chat.router)

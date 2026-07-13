@@ -14,6 +14,7 @@ class ReportRepository:
         file_path: str,
         uploaded_by: int,
         extracted_text: str,
+        summary: str,
     ):
         report_count = db.query(Report).count() + 1
 
@@ -28,6 +29,7 @@ class ReportRepository:
             file_name=file_name,
             file_path=file_path,
             extracted_text=extracted_text,
+            summary=summary,
             uploaded_by=uploaded_by,
         )
 
