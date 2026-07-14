@@ -30,6 +30,11 @@ def store_embedding(
     embedding: list,
     metadata: dict,
 ):
+    print("========== STORING ==========")
+    print("Report ID:", report_id)
+    print("Vector Length:", len(embedding))
+    print("Metadata:", metadata)
+
     client.upsert(
         collection_name=COLLECTION_NAME,
         points=[
@@ -40,6 +45,8 @@ def store_embedding(
             )
         ],
     )
+
+    print("========== STORED ==========")
 
 
 def search_embedding(

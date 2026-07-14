@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 from App.ai.chatbot import ask_doctor
 
@@ -8,12 +9,16 @@ router = APIRouter(
 )
 
 
-@router.post("/")
-def chat(question: str):
+class ChatRequest(BaseModel):
+    question: str
 
-    answer = ask_doctor(question)
+
+@router.post("/")
+def chat(request: ChatRequest):
+
+    answer = ask_doctor(request.question)
 
     return {
-        "question": question,
+        "question": request.question,
         "answer": answer,
     }
