@@ -16,6 +16,10 @@ from App.api import (
     doctor,
     appointment,
     report,
+    patient_history,
+    report_compare,
+    drug_interaction,
+    dashboard,
 )
 
 # Create database tables
@@ -50,7 +54,11 @@ app.include_router(patient.router)
 app.include_router(doctor.router)
 app.include_router(appointment.router)
 app.include_router(report.router)
-
+app.include_router(patient_history.router)
+app.include_router(report_compare.router)
+app.include_router(drug_interaction.router)
+app.include_router(dashboard.router)
+app.include_router(chat.router)
 # -----------------------------
 # Root Endpoint
 # -----------------------------
@@ -79,4 +87,4 @@ def health():
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse("App/static/favicon.ico")
-app.include_router(chat.router)
+app.include_router(chat.router) 

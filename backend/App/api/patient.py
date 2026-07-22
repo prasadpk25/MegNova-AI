@@ -10,6 +10,7 @@ from App.schemas.patient import (
     PatientUpdate,
     PatientResponse,
 )
+from App.services.timeline_service import get_patient_timeline
 from App.services.patient_service import PatientService
 
 router = APIRouter(
@@ -109,3 +110,13 @@ def delete_patient(
     return {
         "message": "Patient deleted successfully"
     }
+@router.get("/{patient_id}/timeline")
+def patient_timeline(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_patient_timeline(
+        db=db,
+        patient_id=patient_id,
+    )

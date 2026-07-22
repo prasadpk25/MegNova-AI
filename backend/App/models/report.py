@@ -9,7 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from sqlalchemy import Text
+
 from App.database.database import Base
 
 
@@ -51,15 +51,16 @@ class Report(Base):
         String(255),
         nullable=False,
     )
+
     extracted_text = Column(
-    Text,
-    nullable=True,
+        Text,
+        nullable=True,
     )
 
     summary = Column(
-    Text,
-    nullable=True,
-   )
+        Text,
+        nullable=True,
+    )
 
     file_path = Column(
         String(500),
@@ -97,4 +98,3 @@ class Report(Base):
         "Doctor",
         back_populates="reports",
     )
-    
