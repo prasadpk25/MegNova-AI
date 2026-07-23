@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from App.api import chat
 
 from App.database.database import Base, engine
 
@@ -20,6 +19,9 @@ from App.api import (
     report_compare,
     drug_interaction,
     dashboard,
+    chat,
+    clinical_guidelines,
+    analytics,
 )
 
 # Create database tables
@@ -48,7 +50,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ============================
 # Register API Routers
+# ============================
+
 app.include_router(auth.router)
 app.include_router(patient.router)
 app.include_router(doctor.router)
@@ -59,9 +64,13 @@ app.include_router(report_compare.router)
 app.include_router(drug_interaction.router)
 app.include_router(dashboard.router)
 app.include_router(chat.router)
-# -----------------------------
+app.include_router(clinical_guidelines.router)
+app.include_router(analytics.router)
+
+# ============================
 # Root Endpoint
-# -----------------------------
+# ============================
+
 @app.get("/")
 def root():
     return {
@@ -71,9 +80,10 @@ def root():
     }
 
 
-# -----------------------------
+# ============================
 # Health Check
-# -----------------------------
+# ============================
+
 @app.get("/health")
 def health():
     return {
@@ -81,10 +91,11 @@ def health():
         "database": "Connected",
     }
 
-# -----------------------------
+
+# ============================
 # Favicon
-# -----------------------------
+# ============================
+
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse("App/static/favicon.ico")
-app.include_router(chat.router) 

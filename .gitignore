@@ -123,3 +123,22 @@ backend/App/static/uploads/
 
 # Logs
 *.log
+# Virtual Environment
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Qdrant Database
+backend/qdrant_db/
+
+# Uploads
+backend/App/uploads/
+
+# IDE
+.vscode/
+
+# Logs
+*.log

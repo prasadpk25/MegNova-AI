@@ -8,6 +8,7 @@ from views.dashboard import dashboard_page
 from views.patients import patients_page
 from views.reports import reports_page
 from views.chatbot import chatbot_page
+from views.clinical_guidelines import clinical_guidelines_page
 
 from components.sidebar import sidebar
 
@@ -55,6 +56,9 @@ else:
 
     elif menu == "AI Assistant":
         chatbot_page()
+
+    elif menu == "Clinical Guidelines":
+        clinical_guidelines_page()
 
     elif menu == "Drug Checker":
         st.title("💊 Drug Checker")
