@@ -6,47 +6,52 @@ def sidebar():
 
     with st.sidebar:
 
-        # -----------------------------
+        # =====================================
         # Logo
-        # -----------------------------
+        # =====================================
         st.markdown(
             """
-            <h2 style='text-align:center;'>
-            🏥 AI Hospital
+            <h2 style='text-align:center;color:#00B4D8;'>
+                🏥 MegNova AI
             </h2>
+            <p style='text-align:center;color:gray;'>
+                Smart Hospital Management Platform
+            </p>
             """,
             unsafe_allow_html=True,
         )
 
-        st.caption("Digital Twin Platform")
-
         st.divider()
 
-        # -----------------------------
-        # User Card
-        # -----------------------------
-        st.markdown("### 👨‍⚕️ Dr. Prasad")
+        # =====================================
+        # User Information
+        # =====================================
+        st.markdown("### 👨‍⚕️ Welcome")
+        st.write("**Dr. Prasad**")
         st.success("🟢 Online")
 
         st.divider()
 
-        # -----------------------------
-        # Navigation
-        # -----------------------------
+        # =====================================
+        # Navigation Menu
+        # =====================================
+
         selected = option_menu(
             menu_title=None,
             options=[
                 "Dashboard",
                 "Patients",
+                "Doctors",
                 "Reports",
-                "Upload",
+                "Upload Reports",
                 "AI Assistant",
                 "Clinical Guidelines",
-                "Drug Checker",
+                "Drug Interaction",
+                "Patient Timeline",
                 "Medical Search",
                 "Analytics",
                 "Settings",
-                "Profile"
+                "Profile",
             ],
             icons=[
                 "speedometer2",
@@ -56,16 +61,17 @@ def sidebar():
                 "robot",
                 "journal-medical",
                 "capsule",
+                "clock-history",
                 "search",
                 "bar-chart",
                 "gear",
-                "person-circle"
+                "person-circle",
             ],
-            menu_icon="cast",
+            menu_icon="hospital",
             default_index=0,
             styles={
                 "container": {
-                    "padding": "0!important",
+                    "padding": "5!important",
                     "background-color": "#0E1117",
                 },
                 "icon": {
@@ -73,7 +79,7 @@ def sidebar():
                     "font-size": "18px",
                 },
                 "nav-link": {
-                    "font-size": "16px",
+                    "font-size": "15px",
                     "text-align": "left",
                     "margin": "4px",
                     "--hover-color": "#262730",
@@ -82,14 +88,21 @@ def sidebar():
                 "nav-link-selected": {
                     "background-color": "#0096C7",
                     "border-radius": "8px",
+                    "color": "white",
                 },
             },
         )
 
         st.divider()
 
+        # =====================================
+        # Logout Button
+        # =====================================
+
         if st.button("🚪 Logout", use_container_width=True):
-            st.session_state.logged_in = False
-            st.rerun()
+    
+           st.session_state.clear()
+
+           st.rerun()
 
     return selected

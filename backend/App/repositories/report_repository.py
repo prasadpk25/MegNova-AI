@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from App.models.report import Report
 from App.schemas.report import ReportCreate
@@ -43,6 +43,10 @@ class ReportRepository:
     def get_all_reports(db: Session):
         return (
             db.query(Report)
+            .options(
+                joinedload(Report.patient),
+                joinedload(Report.doctor),
+            )
             .filter(Report.is_active == True)
             .all()
         )
@@ -60,3 +64,17 @@ class ReportRepository:
             )
             .first()
         )
+
+    @staticmethod
+    def delete_report(
+        db: Session,
+        report: Report,
+    ):
+        report.is_active = False
+
+        db.commit()
+        db.refresh(report)
+
+        return {
+            "message": "Report deleted successfully"
+        }

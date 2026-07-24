@@ -8,7 +8,7 @@ from App.database.database import Base, engine
 # Import all models
 import App.models
 
-# Import API routers
+# Import API Routers
 from App.api import (
     auth,
     patient,
@@ -24,35 +24,77 @@ from App.api import (
     analytics,
 )
 
-# Create database tables
+# Create Database Tables
 Base.metadata.create_all(bind=engine)
 
-# Create FastAPI app
+# ======================================================
+# FastAPI Application
+# ======================================================
+
 app = FastAPI(
     title="MegNova AI API",
-    description="AI-Powered Digital Twin Platform for Smart Healthcare",
     version="1.0.0",
+    description="""
+# 🏥 MegNova AI
+
+MegNova AI is an AI-powered Smart Hospital Management System that assists healthcare professionals using Artificial Intelligence, OCR, Retrieval-Augmented Generation (RAG), and Large Language Models.
+
+## Core Features
+
+- 🔐 JWT Authentication
+- 👨‍⚕️ Doctor Management
+- 🧑‍🤝‍🧑 Patient Management
+- 📅 Appointment Scheduling
+- 📄 Medical Report Upload
+- 🔍 OCR Report Extraction
+- 🤖 AI Medical Report Summarization
+- 📚 Clinical Guideline Search (RAG)
+- 💊 Drug Interaction Checker
+- 🕒 Patient Timeline
+- 🧠 AI Patient History
+- 📑 Report Comparison
+- 📊 Analytics Dashboard
+- 💬 AI Medical Assistant
+
+## Technology Stack
+
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+- Ollama (Llama 3)
+- Qdrant Vector Database
+- Sentence Transformers
+- EasyOCR
+- Streamlit
+- Swagger UI
+""",
 )
 
-# Static files
+# ======================================================
+# Static Files
+# ======================================================
+
 app.mount(
     "/static",
     StaticFiles(directory="App/static"),
     name="static",
 )
 
-# Enable CORS
+# ======================================================
+# CORS
+# ======================================================
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change in production
+    allow_origins=["*"],      # Restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ============================
+# ======================================================
 # Register API Routers
-# ============================
+# ======================================================
 
 app.include_router(auth.router)
 app.include_router(patient.router)
@@ -67,34 +109,36 @@ app.include_router(chat.router)
 app.include_router(clinical_guidelines.router)
 app.include_router(analytics.router)
 
-# ============================
+# ======================================================
 # Root Endpoint
-# ============================
+# ======================================================
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 def root():
     return {
         "project": "MegNova AI",
         "version": "1.0.0",
         "status": "Backend Running Successfully 🚀",
+        "documentation": "/docs",
     }
 
 
-# ============================
+# ======================================================
 # Health Check
-# ============================
+# ======================================================
 
-@app.get("/health")
+@app.get("/health", tags=["Health"])
 def health():
     return {
         "status": "healthy",
         "database": "Connected",
+        "api": "Running",
     }
 
 
-# ============================
+# ======================================================
 # Favicon
-# ============================
+# ======================================================
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():

@@ -62,17 +62,18 @@ class ReportService:
             print("Storing embedding in Qdrant...")
 
             store_embedding(
-                  report_id=saved_report.id,
-                  embedding=embedding,
-                  metadata={
-                      "patient_id": report.patient_id,
-                      "doctor_id": report.doctor_id,
-                      "report_name": report.report_name,
-                      "summary": summary,
-        },
-    )
+                report_id=saved_report.id,
+                embedding=embedding,
+                metadata={
+                    "patient_id": report.patient_id,
+                    "doctor_id": report.doctor_id,
+                    "report_name": report.report_name,
+                    "summary": summary,
+                },
+            )
 
         print("Embedding stored successfully!")
+
         return saved_report
 
     @staticmethod
@@ -88,3 +89,52 @@ class ReportService:
             db,
             report_id,
         )
+
+    @staticmethod
+    def delete_report(
+        db: Session,
+        report_id: int,
+    ):
+        report = ReportRepository.get_report_by_id(
+            db,
+            report_id,
+        )
+
+        if not report:
+            return None
+
+        return ReportRepository.delete_report(
+            db,
+            report,
+        )
+
+    @staticmethod
+    def summarize_existing_report(
+        db: Session,
+        report_id: int,
+    ):
+        report = ReportRepository.get_report_by_id(
+            db,
+            report_id,
+        )
+
+        if not report:
+            return None
+
+        if not report.extracted_text:
+            return {
+                "summary": "No extracted text available."
+            }
+
+        summary = summarize_report(
+            report.extracted_text
+        )
+
+        report.summary = summary
+
+        db.commit()
+        db.refresh(report)
+
+        return {
+            "summary": summary
+        }

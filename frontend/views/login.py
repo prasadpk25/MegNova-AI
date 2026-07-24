@@ -1,30 +1,40 @@
 import streamlit as st
+from utils.api import login
+
 
 def login_page():
 
-    st.title("🏥 AI Hospital Digital Twin")
+    st.title("🏥 MegNova AI")
+    st.caption("AI-Powered Smart Hospital Management System")
 
     st.markdown("### Secure Clinical Decision Support System")
 
     st.divider()
 
-    username = st.text_input("👤 Username")
+    email = st.text_input("📧 Email")
 
     password = st.text_input(
         "🔒 Password",
-        type="password"
+        type="password",
     )
 
-    st.checkbox("Remember Me")
+    remember = st.checkbox("Remember Me")
 
     if st.button("🔐 Login", use_container_width=True):
 
-        if username == "admin" and password == "admin123":
+        response = login(email, password)
+
+        if response.status_code == 200:
+
+            token = response.json()["access_token"]
 
             st.session_state.logged_in = True
+            st.session_state.access_token = token
+
+            st.success("Login Successful")
 
             st.rerun()
 
         else:
 
-            st.error("Invalid Username or Password")
+            st.error(response.json()["detail"])
