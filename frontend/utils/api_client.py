@@ -15,6 +15,16 @@ def headers():
     return {}
 
 
+def login(email, password):
+    return requests.post(
+        f"{BASE_URL}/auth/login",
+        data={
+            "username": email,
+            "password": password,
+        },
+    )
+
+
 def get(endpoint):
     return requests.get(
         BASE_URL + endpoint,
