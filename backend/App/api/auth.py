@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -23,7 +23,11 @@ router = APIRouter(
 # ----------------------------------------------------
 # Register
 # ----------------------------------------------------
-@router.post("/register", response_model=UserResponse)
+@router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def register_user(
     user: UserRegister,
     db: Session = Depends(get_db),
@@ -36,7 +40,7 @@ def register_user(
 
     if existing_user:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
         )
 
@@ -55,44 +59,30 @@ def register_user(
 
 
 # ----------------------------------------------------
-# Login (JSON) - Used by Frontend
+# Login (JSON) - Used by Streamlit Frontend
 # ----------------------------------------------------
-@router.post("/login", response_model=Token)
+@router.post(
+    "/login",
+    response_model=Token,
+)
 def login_user(
     user: UserLogin,
     db: Session = Depends(get_db),
 ):
-    print("\n========== LOGIN START ==========")
-    print("STEP 1 : Login request received")
-
     db_user = (
         db.query(User)
         .filter(User.email == user.email)
         .first()
     )
 
-    print("STEP 2 : User fetched ->", db_user)
-
-    if not db_user:
-        print("User not found")
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password",
-        )
-
-    print("STEP 3 : Verifying password")
-
-    if not verify_password(
+    if not db_user or not verify_password(
         user.password,
         db_user.hashed_password,
     ):
-        print("Password incorrect")
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-
-    print("STEP 4 : Creating JWT Token")
 
     access_token = create_access_token(
         {
@@ -100,9 +90,6 @@ def login_user(
             "role": db_user.role,
         }
     )
-
-    print("STEP 5 : Login Successful")
-    print("========== LOGIN END ==========\n")
 
     return {
         "access_token": access_token,
@@ -111,44 +98,30 @@ def login_user(
 
 
 # ----------------------------------------------------
-# OAuth2 Login - Used by Swagger
+# OAuth2 Login - Used by Swagger UI
 # ----------------------------------------------------
-@router.post("/token", response_model=Token)
+@router.post(
+    "/token",
+    response_model=Token,
+)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
-    print("\n========== SWAGGER LOGIN START ==========")
-    print("STEP 1 : Swagger login request")
-
     db_user = (
         db.query(User)
         .filter(User.email == form_data.username)
         .first()
     )
 
-    print("STEP 2 : User fetched ->", db_user)
-
-    if not db_user:
-        print("User not found")
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect username or password",
-        )
-
-    print("STEP 3 : Verifying password")
-
-    if not verify_password(
+    if not db_user or not verify_password(
         form_data.password,
         db_user.hashed_password,
     ):
-        print("Password incorrect")
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-
-    print("STEP 4 : Creating JWT Token")
 
     access_token = create_access_token(
         {
@@ -156,9 +129,6 @@ def login_for_access_token(
             "role": db_user.role,
         }
     )
-
-    print("STEP 5 : Login Successful")
-    print("========== SWAGGER LOGIN END ==========\n")
 
     return {
         "access_token": access_token,
@@ -169,7 +139,10 @@ def login_for_access_token(
 # ----------------------------------------------------
 # Current Logged-in User
 # ----------------------------------------------------
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
 def get_me(
     current_user: User = Depends(get_current_user),
 ):

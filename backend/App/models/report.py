@@ -1,14 +1,14 @@
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
-    DateTime,
-    ForeignKey,
-    Boolean,
 )
-from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from App.database.database import Base
 
@@ -21,8 +21,8 @@ class Report(Base):
     report_id = Column(
         String(20),
         unique=True,
-        nullable=False,
         index=True,
+        nullable=False,
     )
 
     patient_id = Column(
@@ -52,6 +52,11 @@ class Report(Base):
         nullable=False,
     )
 
+    file_path = Column(
+        String(500),
+        nullable=False,
+    )
+
     extracted_text = Column(
         Text,
         nullable=True,
@@ -60,11 +65,6 @@ class Report(Base):
     summary = Column(
         Text,
         nullable=True,
-    )
-
-    file_path = Column(
-        String(500),
-        nullable=False,
     )
 
     uploaded_by = Column(
@@ -76,17 +76,20 @@ class Report(Base):
     is_active = Column(
         Boolean,
         default=True,
+        nullable=False,
     )
 
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
+        nullable=False,
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+        nullable=False,
     )
 
     patient = relationship(

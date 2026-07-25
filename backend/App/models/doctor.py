@@ -1,16 +1,15 @@
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
     Boolean,
+    Column,
     DateTime,
     ForeignKey,
+    Integer,
+    String,
 )
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from App.database.database import Base
-
-from sqlalchemy.orm import relationship
 
 
 class Doctor(Base):
@@ -21,8 +20,8 @@ class Doctor(Base):
     doctor_id = Column(
         String(20),
         unique=True,
-        nullable=False,
         index=True,
+        nullable=False,
     )
 
     full_name = Column(
@@ -81,23 +80,28 @@ class Doctor(Base):
     is_active = Column(
         Boolean,
         default=True,
+        nullable=False,
     )
 
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
+        nullable=False,
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+        nullable=False,
     )
+
     appointments = relationship(
         "Appointment",
-         back_populates="doctor",
+        back_populates="doctor",
     )
+
     reports = relationship(
-    "Report",
-    back_populates="doctor",
-)
+        "Report",
+        back_populates="doctor",
+    )

@@ -15,9 +15,8 @@ class ReportRepository:
         uploaded_by: int,
         extracted_text: str,
         summary: str,
-    ):
+    ) -> Report:
         report_count = db.query(Report).count() + 1
-
         report_id = f"MR{report_count:06d}"
 
         new_report = Report(
@@ -40,14 +39,16 @@ class ReportRepository:
         return new_report
 
     @staticmethod
-    def get_all_reports(db: Session):
+    def get_all_reports(
+        db: Session,
+    ) -> list[Report]:
         return (
             db.query(Report)
             .options(
                 joinedload(Report.patient),
                 joinedload(Report.doctor),
             )
-            .filter(Report.is_active == True)
+            .filter(Report.is_active.is_(True))
             .all()
         )
 
@@ -55,12 +56,16 @@ class ReportRepository:
     def get_report_by_id(
         db: Session,
         report_id: int,
-    ):
+    ) -> Report | None:
         return (
             db.query(Report)
+            .options(
+                joinedload(Report.patient),
+                joinedload(Report.doctor),
+            )
             .filter(
                 Report.id == report_id,
-                Report.is_active == True,
+                Report.is_active.is_(True),
             )
             .first()
         )
@@ -69,12 +74,10 @@ class ReportRepository:
     def delete_report(
         db: Session,
         report: Report,
-    ):
+    ) -> Report:
         report.is_active = False
 
         db.commit()
         db.refresh(report)
 
-        return {
-            "message": "Report deleted successfully"
-        }
+        return report

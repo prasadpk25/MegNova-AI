@@ -6,64 +6,101 @@ from App.ai.vector_store import (
 
 import ollama
 
-MODEL_NAME = "llama3"    # Change to llama3.2 if needed
+MODEL_NAME = "llama3"
 
 
-def ask_doctor(question: str):
+def ask_doctor(question: str) -> str:
+    """
+    Answer a doctor's question using retrieved medical reports.
+    """
 
-    create_collection()
+    try:
+        create_collection()
 
-    embedding = generate_embedding(question)
+        embedding = generate_embedding(question)
 
-    results = search_embedding(embedding)
+        if embedding is None:
+            return "Unable to process the question."
 
-    if not results.points:
-        return "No medical reports were found."
+        results = search_embedding(embedding)
 
-    context = ""
+        if not results.points:
+            return "No medical reports were found."
 
-    for point in results.points:
+        context = ""
 
-        payload = point.payload
+        for point in results.points[:5]:
+            payload = point.payload or {}
 
-        context += f"""
+            summary = payload.get("summary")
+
+            if not summary:
+                continue
+
+            context += f"""
+Patient:
+{payload.get("patient_name", "Unknown")}
+
+Doctor:
+{payload.get("doctor_name", "Unknown")}
+
 Report Name:
-{payload.get("report_name")}
+{payload.get("report_name", "Unknown")}
+
+Report Type:
+{payload.get("report_type", "Unknown")}
 
 Summary:
-{payload.get("summary")}
+{summary}
 
+----------------------------------------
 """
 
-    prompt = f"""
-You are an experienced medical AI assistant.
+        if not context.strip():
+            return "No summarized medical reports are available."
 
-Answer ONLY using the information below.
+        prompt = f"""
+You are MegNova AI, an intelligent clinical decision support assistant.
 
-Medical Reports
+Your job is to answer questions ONLY using the retrieved medical reports.
+
+==============================
+Retrieved Medical Reports
+==============================
 
 {context}
 
-Doctor Question
+==============================
+Doctor's Question
+==============================
 
 {question}
 
-Rules
+==============================
+Instructions
+==============================
 
-1. Never make up information.
-2. Answer only from the reports.
-3. If the answer is unavailable, say:
+1. Answer ONLY using the retrieved reports.
+2. Never invent, infer, or assume medical information.
+3. If the answer is unavailable, reply exactly:
 "I could not find this information in the uploaded reports."
+4. Keep answers concise and professional.
+5. Use bullet points when appropriate.
+6. If multiple reports are relevant, summarize all of them.
+7. Do not provide diagnosis or treatment recommendations.
 """
 
-    response = ollama.chat(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-    )
+        response = ollama.chat(
+            model=MODEL_NAME,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
 
-    return response["message"]["content"]
+        return response["message"]["content"].strip()
+
+    except Exception as e:
+        return f"Error: {str(e)}"

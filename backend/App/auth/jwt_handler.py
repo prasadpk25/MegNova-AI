@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+
 from jose import jwt
 
 from App.core.config import (
@@ -8,7 +9,11 @@ from App.core.config import (
 )
 
 
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
+    """
+    Generate a JWT access token.
+    """
+
     to_encode = data.copy()
 
     expire = datetime.now(timezone.utc) + timedelta(
@@ -17,10 +22,8 @@ def create_access_token(data: dict):
 
     to_encode.update({"exp": expire})
 
-    encoded_jwt = jwt.encode(
+    return jwt.encode(
         to_encode,
         SECRET_KEY,
         algorithm=ALGORITHM,
     )
-
-    return encoded_jwt

@@ -1,0 +1,5 @@
+[33m8dc1656[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m feat(reports): implement upload, AI summary, report management and frontend integration
+[33m697e676[m feat: add Clinical Guideline RAG and frontend integration
+[33md91b706[m feat: implement AI healthcare modules and dashboard
+[33m9315475[m feat: complete AI backend with OCR, RAG, Ollama and Qdrant
+[33m7755738[m feat(ai): integrate local Llama3 with OCR, summarization and medical RAG

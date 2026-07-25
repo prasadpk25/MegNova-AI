@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from App.models.doctor import Doctor
 from App.repositories.doctor_repository import DoctorRepository
 from App.schemas.doctor import DoctorCreate, DoctorUpdate
 
@@ -11,7 +12,7 @@ class DoctorService:
         db: Session,
         doctor: DoctorCreate,
         created_by: int,
-    ):
+    ) -> Doctor:
         return DoctorRepository.create_doctor(
             db=db,
             doctor=doctor,
@@ -19,14 +20,16 @@ class DoctorService:
         )
 
     @staticmethod
-    def get_all_doctors(db: Session):
+    def get_all_doctors(
+        db: Session,
+    ) -> list[Doctor]:
         return DoctorRepository.get_all_doctors(db)
 
     @staticmethod
     def get_doctor_by_id(
         db: Session,
         doctor_id: int,
-    ):
+    ) -> Doctor | None:
         return DoctorRepository.get_doctor_by_id(
             db,
             doctor_id,
@@ -35,9 +38,9 @@ class DoctorService:
     @staticmethod
     def update_doctor(
         db: Session,
-        db_doctor,
+        db_doctor: Doctor,
         doctor: DoctorUpdate,
-    ):
+    ) -> Doctor:
         return DoctorRepository.update_doctor(
             db,
             db_doctor,
@@ -47,8 +50,8 @@ class DoctorService:
     @staticmethod
     def delete_doctor(
         db: Session,
-        db_doctor,
-    ):
+        db_doctor: Doctor,
+    ) -> Doctor:
         return DoctorRepository.delete_doctor(
             db,
             db_doctor,

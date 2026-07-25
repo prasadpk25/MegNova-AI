@@ -1,18 +1,17 @@
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Date,
     Boolean,
+    Column,
+    Date,
     DateTime,
     ForeignKey,
+    Integer,
+    String,
     Text,
 )
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from App.database.database import Base
-
-from sqlalchemy.orm import relationship
 
 
 class Patient(Base):
@@ -23,8 +22,8 @@ class Patient(Base):
     patient_id = Column(
         String(20),
         unique=True,
-        nullable=False,
         index=True,
+        nullable=False,
     )
 
     full_name = Column(
@@ -87,23 +86,28 @@ class Patient(Base):
     is_active = Column(
         Boolean,
         default=True,
+        nullable=False,
     )
 
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
+        nullable=False,
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+        nullable=False,
     )
+
     appointments = relationship(
         "Appointment",
-         back_populates="patient",
+        back_populates="patient",
     )
+
     reports = relationship(
-    "Report",
-    back_populates="patient",
-)
+        "Report",
+        back_populates="patient",
+    )

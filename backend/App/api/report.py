@@ -9,15 +9,15 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    status,
 )
-
 from sqlalchemy.orm import Session
 
-from App.database.database import get_db
-from App.services.report_service import ReportService
-from App.schemas.report import ReportCreate
 from App.auth.dependencies import get_current_user
+from App.database.database import get_db
 from App.models.user import User
+from App.schemas.report import ReportCreate
+from App.services.report_service import ReportService
 
 router = APIRouter(
     prefix="/reports",
@@ -27,11 +27,22 @@ router = APIRouter(
 UPLOAD_DIR = Path("App/static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+ALLOWED_EXTENSIONS = {
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".docx",
+}
+
 
 # ======================================================
 # Upload Report
 # ======================================================
-@router.post("/upload", status_code=201)
+@router.post(
+    "/upload",
+    status_code=status.HTTP_201_CREATED,
+)
 def upload_report(
     patient_id: int = Form(...),
     doctor_id: int = Form(...),
@@ -41,29 +52,18 @@ def upload_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-
-    allowed_extensions = {
-        ".pdf",
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".docx",
-    }
-
     extension = Path(file.filename).suffix.lower()
 
-    if extension not in allowed_extensions:
+    if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unsupported file type.",
         )
 
     unique_filename = f"{uuid4().hex}{extension}"
-
     file_path = UPLOAD_DIR / unique_filename
 
     try:
-
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
@@ -88,8 +88,11 @@ def upload_report(
         }
 
     except Exception as e:
+        if file_path.exists():
+            file_path.unlink()
+
         raise HTTPException(
-            status_code=500,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )
 
@@ -114,15 +117,14 @@ def get_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-
     report = ReportService.get_report_by_id(
         db,
         report_id,
     )
 
-    if report is None:
+    if not report:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Report not found.",
         )
 
@@ -138,15 +140,14 @@ def summarize_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-
     report = ReportService.summarize_existing_report(
         db,
         report_id,
     )
 
-    if report is None:
+    if not report:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Report not found.",
         )
 
@@ -165,7 +166,6 @@ def delete_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-
     deleted = ReportService.delete_report(
         db,
         report_id,
@@ -173,7 +173,7 @@ def delete_report(
 
     if not deleted:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Report not found.",
         )
 

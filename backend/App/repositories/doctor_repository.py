@@ -11,7 +11,7 @@ class DoctorRepository:
         db: Session,
         doctor: DoctorCreate,
         created_by: int,
-    ):
+    ) -> Doctor:
         doctor_count = db.query(Doctor).count() + 1
         doctor_id = f"DR{doctor_count:06d}"
 
@@ -36,10 +36,12 @@ class DoctorRepository:
         return new_doctor
 
     @staticmethod
-    def get_all_doctors(db: Session):
+    def get_all_doctors(
+        db: Session,
+    ) -> list[Doctor]:
         return (
             db.query(Doctor)
-            .filter(Doctor.is_active == True)
+            .filter(Doctor.is_active.is_(True))
             .all()
         )
 
@@ -47,12 +49,12 @@ class DoctorRepository:
     def get_doctor_by_id(
         db: Session,
         doctor_id: int,
-    ):
+    ) -> Doctor | None:
         return (
             db.query(Doctor)
             .filter(
                 Doctor.id == doctor_id,
-                Doctor.is_active == True,
+                Doctor.is_active.is_(True),
             )
             .first()
         )
@@ -62,7 +64,7 @@ class DoctorRepository:
         db: Session,
         db_doctor: Doctor,
         doctor: DoctorUpdate,
-    ):
+    ) -> Doctor:
         update_data = doctor.model_dump(exclude_unset=True)
 
         for key, value in update_data.items():
@@ -77,8 +79,9 @@ class DoctorRepository:
     def delete_doctor(
         db: Session,
         db_doctor: Doctor,
-    ):
+    ) -> Doctor:
         db_doctor.is_active = False
+
         db.commit()
         db.refresh(db_doctor)
 

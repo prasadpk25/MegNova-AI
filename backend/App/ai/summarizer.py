@@ -1,9 +1,12 @@
 import ollama
 
-MODEL_NAME = "llama3"   # Change to "llama3.2" if that's the model you downloaded
+MODEL_NAME = "llama3"
 
 
-def summarize_report(report_text: str):
+def summarize_report(report_text: str) -> str:
+    """
+    Generate a concise summary of a medical report using Ollama.
+    """
 
     if not report_text.strip():
         return "No text found."
@@ -11,27 +14,33 @@ def summarize_report(report_text: str):
     prompt = f"""
 You are an expert medical AI assistant.
 
-Summarize the following medical report in simple English.
+Summarize the following medical report.
 
-Keep the summary:
-- Short
-- Accurate
-- Easy for doctors to understand
-- Mention important abnormalities if present.
+Instructions:
+- Use simple and professional English.
+- Keep the summary concise.
+- Mention only clinically important findings.
+- If the report appears normal, clearly state that.
+- Do not invent or assume information that is not present.
+- Do not provide diagnosis or treatment recommendations.
 
 Medical Report:
 
 {report_text}
 """
 
-    response = ollama.chat(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-    )
+    try:
+        response = ollama.chat(
+            model=MODEL_NAME,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
 
-    return response["message"]["content"]
+        return response["message"]["content"].strip()
+
+    except Exception as e:
+        return f"Summary generation failed: {str(e)}"

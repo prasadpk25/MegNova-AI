@@ -17,7 +17,6 @@ from App.api import (
     report,
     patient_history,
     report_compare,
-    drug_interaction,
     dashboard,
     chat,
     clinical_guidelines,
@@ -103,7 +102,6 @@ app.include_router(appointment.router)
 app.include_router(report.router)
 app.include_router(patient_history.router)
 app.include_router(report_compare.router)
-app.include_router(drug_interaction.router)
 app.include_router(dashboard.router)
 app.include_router(chat.router)
 app.include_router(clinical_guidelines.router)

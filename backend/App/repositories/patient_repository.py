@@ -11,7 +11,7 @@ class PatientRepository:
         db: Session,
         patient: PatientCreate,
         created_by: int,
-    ):
+    ) -> Patient:
         patient_count = db.query(Patient).count() + 1
         patient_id = f"MN{patient_count:06d}"
 
@@ -37,10 +37,12 @@ class PatientRepository:
         return new_patient
 
     @staticmethod
-    def get_all_patients(db: Session):
+    def get_all_patients(
+        db: Session,
+    ) -> list[Patient]:
         return (
             db.query(Patient)
-            .filter(Patient.is_active == True)
+            .filter(Patient.is_active.is_(True))
             .all()
         )
 
@@ -48,12 +50,12 @@ class PatientRepository:
     def get_patient_by_id(
         db: Session,
         patient_id: int,
-    ):
+    ) -> Patient | None:
         return (
             db.query(Patient)
             .filter(
                 Patient.id == patient_id,
-                Patient.is_active == True,
+                Patient.is_active.is_(True),
             )
             .first()
         )
@@ -63,7 +65,7 @@ class PatientRepository:
         db: Session,
         db_patient: Patient,
         patient: PatientUpdate,
-    ):
+    ) -> Patient:
         update_data = patient.model_dump(exclude_unset=True)
 
         for key, value in update_data.items():
@@ -78,8 +80,9 @@ class PatientRepository:
     def delete_patient(
         db: Session,
         db_patient: Patient,
-    ):
+    ) -> Patient:
         db_patient.is_active = False
+
         db.commit()
         db.refresh(db_patient)
 
