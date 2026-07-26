@@ -1,16 +1,36 @@
 fastapi
-uvicorn
+uvicorn[standard]
+
 sqlalchemy
 psycopg2-binary
+alembic
+
 python-dotenv
+python-multipart
 
 passlib[bcrypt]
 bcrypt
-
 python-jose[cryptography]
-python-multipart
 
 pydantic
 email-validator
 
-alembic
+requests
+pandas
+numpy
+
+ollama
+
+sentence-transformers
+transformers
+torch
+
+qdrant-client
+
+easyocr
+pillow
+opencv-python
+
+python-docx
+pymupdf
+redis

@@ -1,160 +1,179 @@
 import streamlit as st
 
-# =====================================
-# Dashboard
-# =====================================
 
 def dashboard_page():
-    """Main dashboard page."""
+    """Main Dashboard"""
 
-    # =====================================
+    # =====================================================
     # Header
-    # =====================================
+    # =====================================================
 
     st.title("🏥 MegNova AI Dashboard")
     st.caption("AI-Powered Hospital Digital Twin")
 
     st.divider()
 
-    # =====================================
+    # =====================================================
     # Welcome
-    # =====================================
+    # =====================================================
 
-    user_name = st.session_state.get("user_name", "Doctor")
+    user_name = st.session_state.get(
+        "user_name",
+        "Doctor",
+    )
 
-    st.markdown(f"""
-    ## Welcome, **{user_name}** 👋
+    st.markdown(
+        f"""
+## Welcome, **{user_name}** 👋
 
-    Monitor hospital operations, manage patients, analyze reports,
-    and interact with the AI Medical Assistant from one unified dashboard.
-    """)
-
-    st.divider()
-
-    # =====================================
-    # Hospital Statistics
-    # =====================================
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric(
-            label="👨‍⚕️ Doctors",
-            value="18",
-            delta="+2",
-        )
-
-    with col2:
-        st.metric(
-            label="🧑 Patients",
-            value="256",
-            delta="+12",
-        )
-
-    with col3:
-        st.metric(
-            label="📄 Reports",
-            value="1342",
-            delta="+25",
-        )
-
-    with col4:
-        st.metric(
-            label="🤖 AI Queries",
-            value="421",
-            delta="+31",
-        )
-
-    st.divider()
-
-    # =====================================
-    # Quick Actions
-    # =====================================
-
-    st.subheader("⚡ Quick Actions")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    with c1:
-        if st.button(
-            "➕ Add Patient",
-            use_container_width=True,
-        ):
-            st.info("Open Patients page from the sidebar.")
-
-    with c2:
-        if st.button(
-            "📤 Upload Report",
-            use_container_width=True,
-        ):
-            st.info("Open Reports page from the sidebar.")
-
-    with c3:
-        if st.button(
-            "🤖 Open AI Assistant",
-            use_container_width=True,
-        ):
-            st.info("Open AI Assistant from the sidebar.")
-
-    with c4:
-        if st.button(
-            "📊 Analytics",
-            use_container_width=True,
-        ):
-            st.info("Open Analytics page from the sidebar.")
-
-    st.divider()
-
-    # =====================================
-    # Recent Activity
-    # =====================================
-
-    st.subheader("🕒 Recent Activity")
-
-    st.info(
-        """
-        • Patient MR000145 admitted
-
-        • Blood Report uploaded successfully
-
-        • AI generated report summary
-
-        • New doctor account created
-
-        • Clinical guideline searched
-        """
+Monitor hospital operations, manage patients, analyze medical reports,
+and interact with the AI Medical Assistant from one unified dashboard.
+"""
     )
 
     st.divider()
 
-    # =====================================
-    # AI Status
-    # =====================================
+    # =====================================================
+    # Hospital Statistics
+    # =====================================================
 
-    left, right = st.columns(2)
+    doctor_count = 18
+    patient_count = 256
+    report_count = 1342
+    ai_queries = 421
 
-    with left:
-        st.subheader("🤖 AI Services")
+    metric_data = [
+        ("👨‍⚕️ Doctors", doctor_count, "+2"),
+        ("🧑 Patients", patient_count, "+12"),
+        ("📄 Reports", report_count, "+25"),
+        ("🤖 AI Queries", ai_queries, "+31"),
+    ]
 
-        st.success("✅ OCR Service")
-        st.success("✅ Medical Summarizer")
-        st.success("✅ Vector Database")
-        st.success("✅ AI Chatbot")
+    cols = st.columns(4)
 
-    with right:
-        st.subheader("🖥️ System Status")
+    for col, metric in zip(cols, metric_data):
 
-        st.success("🟢 FastAPI Running")
-        st.success("🟢 PostgreSQL Connected")
-        st.success("🟢 Qdrant Connected")
-        st.success("🟢 Streamlit Active")
+        label, value, delta = metric
+
+        with col:
+
+            st.metric(
+                label=label,
+                value=value,
+                delta=delta,
+            )
 
     st.divider()
 
-    # =====================================
+    # =====================================================
+    # Quick Actions
+    # =====================================================
+
+    st.subheader("⚡ Quick Actions")
+
+    actions = [
+        (
+            "➕ Add Patient",
+            "Open Patients page from the sidebar.",
+            "dashboard_add_patient",
+        ),
+        (
+            "📤 Upload Report",
+            "Open Reports page from the sidebar.",
+            "dashboard_upload_report",
+        ),
+        (
+            "🤖 Open AI Assistant",
+            "Open AI Assistant from the sidebar.",
+            "dashboard_ai_assistant",
+        ),
+        (
+            "📊 Analytics",
+            "Open Analytics page from the sidebar.",
+            "dashboard_analytics",
+        ),
+    ]
+
+    cols = st.columns(4)
+
+    for col, action in zip(cols, actions):
+
+        title, message, key = action
+
+        with col:
+
+            if st.button(
+                title,
+                key=key,
+                use_container_width=True,
+            ):
+
+                st.info(message)
+
+    st.divider()
+
+    # =====================================================
+    # Recent Activity
+    # =====================================================
+
+    st.subheader("🕒 Recent Activity")
+
+    activities = [
+        "Patient MR000145 admitted",
+        "Blood Report uploaded successfully",
+        "AI generated report summary",
+        "New doctor account created",
+        "Clinical guideline searched",
+    ]
+
+    for activity in activities:
+
+        st.markdown(f"• {activity}")
+
+    st.divider()
+
+    # =====================================================
+    # System Status
+    # =====================================================
+
+    left, right = st.columns(2)
+
+    ai_services = [
+        "OCR Service",
+        "Medical Summarizer",
+        "Vector Database",
+        "AI Chatbot",
+    ]
+
+    system_services = [
+        "FastAPI Running",
+        "PostgreSQL Connected",
+        "Qdrant Connected",
+        "Streamlit Active",
+    ]
+
+    with left:
+
+        st.subheader("🤖 AI Services")
+
+        for service in ai_services:
+
+            st.success(f"✅ {service}")
+
+    with right:
+
+        st.subheader("🖥️ System Status")
+
+        for service in system_services:
+
+            st.success(f"🟢 {service}")
+
+    st.divider()
+
+    # =====================================================
     # Footer
-    # =====================================
+    # =====================================================
 
     st.caption(
-        "MegNova AI • AI Hospital Digital Twin • Version 1.0"
+        "🏥 MegNova AI • AI Hospital Digital Twin • Version 1.0"
     )

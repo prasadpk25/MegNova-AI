@@ -4,9 +4,9 @@ import streamlit as st
 from utils.api_client import delete, get, post
 from utils.helpers import handle_response
 
-# ==========================================
+# ==========================================================
 # Constants
-# ==========================================
+# ==========================================================
 
 REPORT_TYPES = [
     "Blood Test",
@@ -19,10 +19,9 @@ REPORT_TYPES = [
     "Other",
 ]
 
-# ==========================================
+# ==========================================================
 # Helper Functions
-# ==========================================
-
+# ==========================================================
 
 def load_patients():
     """Fetch all patients."""
@@ -58,17 +57,27 @@ def load_doctors():
     return doctor_dict, doctors
 
 
-# ==========================================
+# ==========================================================
 # Upload Section
-# ==========================================
-
+# ==========================================================
 
 def upload_section(patient_dict, doctor_dict):
-    """Upload Medical Report"""
+    """Upload a medical report."""
 
     st.subheader("📤 Upload Medical Report")
 
-    with st.form("upload_report_form", clear_on_submit=True):
+    if not patient_dict:
+        st.warning("No patients available. Please add a patient first.")
+        return
+
+    if not doctor_dict:
+        st.warning("No doctors available. Please add a doctor first.")
+        return
+
+    with st.form(
+        "upload_report_form",
+        clear_on_submit=True,
+    ):
 
         col1, col2 = st.columns(2)
 
@@ -77,11 +86,13 @@ def upload_section(patient_dict, doctor_dict):
             selected_patient = st.selectbox(
                 "Patient",
                 list(patient_dict.keys()),
+                key="upload_patient",
             )
 
             report_name = st.text_input(
                 "Report Name",
                 placeholder="Enter report name",
+                key="report_name",
             )
 
         with col2:
@@ -89,11 +100,13 @@ def upload_section(patient_dict, doctor_dict):
             selected_doctor = st.selectbox(
                 "Doctor",
                 list(doctor_dict.keys()),
+                key="upload_doctor",
             )
 
             report_type = st.selectbox(
                 "Report Type",
                 REPORT_TYPES,
+                key="report_type",
             )
 
         uploaded_file = st.file_uploader(
@@ -105,6 +118,7 @@ def upload_section(patient_dict, doctor_dict):
                 "jpeg",
                 "docx",
             ],
+            key="medical_report_upload",
         )
 
         submit = st.form_submit_button(
@@ -112,37 +126,21 @@ def upload_section(patient_dict, doctor_dict):
             use_container_width=True,
         )
 
-    # --------------------------------------
-
     if not submit:
         return
 
-    # Validation
-
-    if not patient_dict:
-
-        st.error("No patients available.")
-        return
-
-    if not doctor_dict:
-
-        st.error("No doctors available.")
-        return
-
     if not report_name.strip():
-
-        st.warning("Please enter report name.")
+        st.warning("Please enter a report name.")
         return
 
     if uploaded_file is None:
-
         st.warning("Please select a medical report.")
         return
 
     payload = {
         "patient_id": patient_dict[selected_patient],
         "doctor_id": doctor_dict[selected_doctor],
-        "report_name": report_name,
+        "report_name": report_name.strip(),
         "report_type": report_type,
     }
 
@@ -163,65 +161,27 @@ def upload_section(patient_dict, doctor_dict):
         )
 
     if response.status_code in (200, 201):
-
         st.success("✅ Medical report uploaded successfully.")
-
         st.rerun()
 
-    else:
+    try:
+        message = response.json().get(
+            "detail",
+            "Upload failed.",
+        )
+    except Exception:
+        message = "Unable to upload medical report."
 
-        try:
-            message = response.json().get(
-                "detail",
-                "Upload failed.",
-            )
-
-        except Exception:
-            message = response.text
-
-        st.error(message)
-
-
-# ==========================================
-# Main Page (Part 1)
-# ==========================================
-
-
-def reports_page():
-
-    st.title("📄 Medical Reports")
-
-    st.caption(
-        "Upload, manage and summarize patient medical reports."
-    )
-
-    st.divider()
-
-    with st.spinner("Loading hospital data..."):
-
-        patient_dict, _ = load_patients()
-
-        doctor_dict, _ = load_doctors()
-
-    upload_section(
-        patient_dict,
-        doctor_dict,
-    )
-
-    st.divider()
-
-    # -----------------------------
-    # Continue in Part 2
-
-# ==========================================
+    st.error(message)
+# ==========================================================
 # Load Reports
-# ==========================================
-
+# ==========================================================
 
 def load_reports():
     """Fetch all medical reports."""
 
     with st.spinner("Loading medical reports..."):
+
         response = get("/reports/")
         reports = handle_response(response)
 
@@ -257,45 +217,30 @@ def load_reports():
     return pd.DataFrame(rows)
 
 
-# ==========================================
+# ==========================================================
 # Dashboard Metrics
-# ==========================================
-
+# ==========================================================
 
 def metrics_section(df):
+    """Display report metrics."""
 
     total = len(df)
-
-    summarized = len(
-        df[df["Summary"] == "Available"]
-    )
-
+    summarized = len(df[df["Summary"] == "Available"])
     pending = total - summarized
 
     c1, c2, c3 = st.columns(3)
 
-    c1.metric(
-        "📄 Reports",
-        total,
-    )
-
-    c2.metric(
-        "🤖 AI Summaries",
-        summarized,
-    )
-
-    c3.metric(
-        "⏳ Pending",
-        pending,
-    )
+    c1.metric("📄 Reports", total)
+    c2.metric("🤖 AI Summaries", summarized)
+    c3.metric("⏳ Pending", pending)
 
 
-# ==========================================
+# ==========================================================
 # Search & Filters
-# ==========================================
-
+# ==========================================================
 
 def filter_reports(df):
+    """Search and filter reports."""
 
     st.subheader("🔍 Search & Filter")
 
@@ -304,14 +249,15 @@ def filter_reports(df):
     with col1:
 
         search = st.text_input(
-    "🔍 Search Reports",
-    placeholder="Search by report name...",
-    key="reports_search",
-)
+            "🔍 Search Reports",
+            placeholder="Search report, patient or doctor...",
+            key="reports_search",
+        )
 
         patient = st.selectbox(
             "Patient",
             ["All"] + sorted(df["Patient"].unique().tolist()),
+            key="reports_patient_filter",
         )
 
     with col2:
@@ -319,6 +265,7 @@ def filter_reports(df):
         report_type = st.selectbox(
             "Report Type",
             ["All"] + sorted(df["Type"].unique().tolist()),
+            key="reports_type_filter",
         )
 
         summary = st.selectbox(
@@ -328,6 +275,7 @@ def filter_reports(df):
                 "Available",
                 "Pending",
             ],
+            key="reports_summary_filter",
         )
 
     filtered = df.copy()
@@ -347,19 +295,16 @@ def filter_reports(df):
         ]
 
     if patient != "All":
-
         filtered = filtered[
             filtered["Patient"] == patient
         ]
 
     if report_type != "All":
-
         filtered = filtered[
             filtered["Type"] == report_type
         ]
 
     if summary != "All":
-
         filtered = filtered[
             filtered["Summary"] == summary
         ]
@@ -367,14 +312,18 @@ def filter_reports(df):
     return filtered
 
 
-# ==========================================
+# ==========================================================
 # Reports Table
-# ==========================================
-
+# ==========================================================
 
 def reports_table(df):
+    """Display reports table."""
 
     st.subheader("📋 Uploaded Reports")
+
+    if df.empty:
+        st.info("No reports match the selected filters.")
+        return
 
     display = df[
         [
@@ -411,50 +360,24 @@ def reports_table(df):
 
         if st.button(
             "🔄 Refresh",
+            key="refresh_reports_btn",
             use_container_width=True,
         ):
             st.rerun()
 
     st.caption(
-        f"Showing {len(df)} report(s)"
+        f"Showing {len(display)} report(s)"
     )
-
-
-# ==========================================
-# Continue Main Page
-# ==========================================
-
-    reports_df = load_reports()
-
-    if reports_df.empty:
-
-        st.info(
-            "No medical reports found. Upload one to get started."
-        )
-
-        return
-
-    metrics_section(reports_df)
-
-    st.divider()
-
-    filtered_df = filter_reports(reports_df)
-
-    st.divider()
-
-    reports_table(filtered_df)
-
-    st.divider()
-
-    # -----------------------------
-    # Continue in Part 3
-    # -----------------------------
-    # ==========================================
+# ==========================================================
 # AI Summary Section
-# ==========================================
+# ==========================================================
 
 def ai_summary_section(df):
     """Generate and view AI summaries."""
+
+    if df.empty:
+        st.info("No reports available.")
+        return
 
     st.subheader("🤖 AI Medical Summary")
 
@@ -466,11 +389,14 @@ def ai_summary_section(df):
     selected = st.selectbox(
         "Select Report",
         list(report_options.keys()),
+        key="report_selector",
     )
 
     report_db_id = report_options[selected]
 
-    selected_row = df[df["ReportID"] == report_db_id].iloc[0]
+    selected_row = df[
+        df["ReportID"] == report_db_id
+    ].iloc[0]
 
     col1, col2 = st.columns(2)
 
@@ -478,6 +404,7 @@ def ai_summary_section(df):
 
         if st.button(
             "🧠 Generate AI Summary",
+            key="generate_summary_btn",
             use_container_width=True,
         ):
 
@@ -489,7 +416,9 @@ def ai_summary_section(df):
 
             if response.status_code == 200:
 
-                st.success("AI Summary generated successfully.")
+                st.success(
+                    "✅ AI Summary generated successfully."
+                )
 
                 st.rerun()
 
@@ -500,23 +429,24 @@ def ai_summary_section(df):
                         "detail",
                         "Failed to generate summary.",
                     )
-
                 except Exception:
-                    message = response.text
+                    message = "Unable to generate AI summary."
 
                 st.error(message)
 
     with col2:
 
         confirm_delete = st.checkbox(
-            "Confirm Delete"
+            "Confirm Delete",
+            key="confirm_delete_report",
         )
 
         if st.button(
             "🗑 Delete Report",
-            use_container_width=True,
+            key="delete_report_btn",
             type="secondary",
             disabled=not confirm_delete,
+            use_container_width=True,
         ):
 
             response = delete(
@@ -525,13 +455,17 @@ def ai_summary_section(df):
 
             if response.status_code == 200:
 
-                st.success("Report deleted successfully.")
+                st.success(
+                    "✅ Report deleted successfully."
+                )
 
                 st.rerun()
 
             else:
 
-                st.error("Failed to delete report.")
+                st.error(
+                    "Unable to delete report."
+                )
 
     st.divider()
 
@@ -550,6 +484,7 @@ def ai_summary_section(df):
             value=summary,
             height=220,
             disabled=True,
+            key="summary_viewer",
         )
 
     else:
@@ -566,9 +501,9 @@ def ai_summary_section(df):
 
     st.subheader("📋 Report Details")
 
-    col1, col2 = st.columns(2)
+    left, right = st.columns(2)
 
-    with col1:
+    with left:
 
         st.write("**Patient**")
         st.success(selected_row["Patient"])
@@ -579,7 +514,7 @@ def ai_summary_section(df):
         st.write("**Report Name**")
         st.info(selected_row["Report"])
 
-    with col2:
+    with right:
 
         st.write("**Report Type**")
         st.info(selected_row["Type"])
@@ -591,23 +526,23 @@ def ai_summary_section(df):
         st.info(selected_row["Created"])
 
 
-# ==========================================
+# ==========================================================
 # Main Page
-# ==========================================
+# ==========================================================
 
 def reports_page():
+    """Medical Reports Page"""
 
     st.title("📄 Medical Reports")
-
     st.caption(
         "Upload, manage and summarize patient medical reports."
     )
 
     st.divider()
 
-    # ----------------------------
+    # --------------------------------------
     # Load master data
-    # ----------------------------
+    # --------------------------------------
 
     with st.spinner("Loading hospital data..."):
 
@@ -621,16 +556,16 @@ def reports_page():
 
     st.divider()
 
-    # ----------------------------
+    # --------------------------------------
     # Load reports
-    # ----------------------------
+    # --------------------------------------
 
     reports_df = load_reports()
 
     if reports_df.empty:
 
         st.info(
-            "No medical reports found."
+            "No medical reports available."
         )
 
         return
@@ -639,13 +574,14 @@ def reports_page():
 
     st.divider()
 
-    filtered_df = filter_reports(
-        reports_df
-    )
+    filtered_df = filter_reports(reports_df)
 
     st.divider()
 
     reports_table(filtered_df)
+
+    if filtered_df.empty:
+        return
 
     st.divider()
 

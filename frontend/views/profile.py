@@ -3,81 +3,103 @@ import streamlit as st
 from utils.api_client import get
 
 
+# ==========================================================
+# User Profile
+# ==========================================================
+
 def profile_page():
+    """User Profile Page"""
 
     st.title("👤 My Profile")
-    st.caption("Manage your MegNova AI account")
+    st.caption("Manage your MegNova AI account.")
 
-    if st.button("🔄 Refresh", use_container_width=True):
+    if st.button(
+        "🔄 Refresh",
+        key="profile_refresh",
+        use_container_width=True,
+    ):
         st.rerun()
 
     st.divider()
 
-    # ============================================
+    # =====================================================
     # Load User
-    # ============================================
+    # =====================================================
 
     with st.spinner("Loading profile..."):
+
         response = get("/auth/me")
 
     if response.status_code != 200:
 
-        st.error("Unable to load profile.")
+        try:
+            message = response.json().get(
+                "detail",
+                "Unable to load profile.",
+            )
+        except Exception:
+            message = "Unable to load profile."
 
-        st.code(response.text)
-
+        st.error(message)
         return
 
     user = response.json()
 
-    # ============================================
-    # Header
-    # ============================================
+    full_name = user.get("full_name", "Unknown User")
+    email = user.get("email", "N/A")
+    role = user.get("role", "user")
+    is_active = user.get("is_active", False)
+    user_id = user.get("id", "N/A")
+    created = user.get("created_at")
 
-    col1, col2 = st.columns([1, 4])
+    st.divider()
 
-    with col1:
+    # =====================================================
+    # Profile Header
+    # =====================================================
+
+    left, right = st.columns([1, 4])
+
+    with left:
 
         st.image(
             "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             width=120,
         )
 
-    with col2:
+    with right:
 
-        st.subheader(user["full_name"])
+        st.subheader(full_name)
 
-        st.write(user["email"])
+        st.write(email)
 
-        if user["is_active"]:
-            st.success(user["role"].upper())
+        if is_active:
+            st.success(f"🟢 {role.upper()}")
         else:
-            st.error("ACCOUNT DISABLED")
+            st.error("🔴 ACCOUNT DISABLED")
 
     st.divider()
 
-    # ============================================
-    # KPIs
-    # ============================================
+    # =====================================================
+    # Overview
+    # =====================================================
 
     k1, k2, k3, k4 = st.columns(4)
 
     k1.metric(
         "User ID",
-        user["id"],
+        user_id,
     )
 
     k2.metric(
         "Role",
-        user["role"].title(),
+        role.title(),
     )
 
     k3.metric(
         "Status",
-        "Active" if user["is_active"] else "Inactive",
+        "Active" if is_active else "Inactive",
     )
-
-    created = user.get("created_at")
 
     k4.metric(
         "Member Since",
@@ -86,11 +108,11 @@ def profile_page():
 
     st.divider()
 
-    # ============================================
+    # =====================================================
     # Tabs
-    # ============================================
+    # =====================================================
 
-    tab1, tab2, tab3, tab4 = st.tabs(
+    personal_tab, security_tab, stats_tab, export_tab = st.tabs(
         [
             "👤 Personal",
             "🔐 Security",
@@ -99,11 +121,11 @@ def profile_page():
         ]
     )
 
-    # ============================================
-    # PERSONAL
-    # ============================================
+    # =====================================================
+    # Personal
+    # =====================================================
 
-    with tab1:
+    with personal_tab:
 
         st.subheader("Personal Information")
 
@@ -113,146 +135,174 @@ def profile_page():
 
             st.text_input(
                 "Full Name",
-                value=user["full_name"],
+                value=full_name,
                 disabled=True,
+                key="profile_name",
             )
 
             st.text_input(
                 "Email",
-                value=user["email"],
+                value=email,
                 disabled=True,
+                key="profile_email",
             )
 
             st.text_input(
                 "User ID",
-                value=str(user["id"]),
+                value=str(user_id),
                 disabled=True,
+                key="profile_userid",
             )
 
         with c2:
 
             st.text_input(
                 "Role",
-                value=user["role"],
+                value=role.title(),
                 disabled=True,
+                key="profile_role",
             )
 
             st.text_input(
                 "Account Status",
-                value="Active" if user["is_active"] else "Inactive",
+                value="Active" if is_active else "Inactive",
                 disabled=True,
+                key="profile_status",
             )
 
             st.text_input(
                 "Email Verified",
                 value="Yes",
                 disabled=True,
+                key="profile_verified",
             )
-    # ============================================
-    # SECURITY
-    # ============================================
 
-    with tab2:
+    # =====================================================
+    # Security
+    # =====================================================
+
+    with security_tab:
 
         st.subheader("Security")
 
         st.info(
-            "Password change functionality will be available once the backend API is implemented."
+            "Password update will be available once the backend API is implemented."
         )
 
         current_password = st.text_input(
             "Current Password",
             type="password",
+            key="current_password",
         )
 
         new_password = st.text_input(
             "New Password",
             type="password",
+            key="new_password",
         )
 
         confirm_password = st.text_input(
             "Confirm Password",
             type="password",
+            key="confirm_password",
         )
 
         if st.button(
             "🔐 Update Password",
+            key="update_password",
             use_container_width=True,
         ):
 
             if not current_password:
-                st.warning("Enter your current password.")
+
+                st.warning("Please enter your current password.")
 
             elif not new_password:
-                st.warning("Enter a new password.")
+
+                st.warning("Please enter a new password.")
+
+            elif len(new_password) < 8:
+
+                st.warning(
+                    "Password should contain at least 8 characters."
+                )
 
             elif new_password != confirm_password:
+
                 st.error("Passwords do not match.")
 
             else:
+
                 st.info(
                     "Backend password update endpoint is not available yet."
                 )
 
-    # ============================================
-    # STATISTICS
-    # ============================================
+    # =====================================================
+    # Statistics
+    # =====================================================
 
-    with tab3:
+    with stats_tab:
 
         st.subheader("Account Statistics")
 
-        c1, c2 = st.columns(2)
+        a, b = st.columns(2)
 
-        c1.metric("User ID", user["id"])
-        c2.metric("Role", user["role"].title())
-
-        c3, c4 = st.columns(2)
-
-        c3.metric(
-            "Account Status",
-            "Active" if user["is_active"] else "Inactive",
+        a.metric(
+            "User ID",
+            user_id,
         )
 
-        c4.metric(
+        b.metric(
+            "Role",
+            role.title(),
+        )
+
+        c, d = st.columns(2)
+
+        c.metric(
+            "Account Status",
+            "Active" if is_active else "Inactive",
+        )
+
+        d.metric(
             "Platform",
             "MegNova AI",
         )
 
         st.success("Profile loaded successfully.")
 
-    # ============================================
-    # EXPORT
-    # ============================================
+    # =====================================================
+    # Export
+    # =====================================================
 
-    with tab4:
+    with export_tab:
 
         st.subheader("Export Profile")
 
-        profile_text = f"""
-User ID      : {user['id']}
-Full Name    : {user['full_name']}
-Email        : {user['email']}
-Role         : {user['role']}
-Status       : {"Active" if user["is_active"] else "Inactive"}
+        profile_text = f"""User ID      : {user_id}
+Full Name    : {full_name}
+Email        : {email}
+Role         : {role}
+Status       : {"Active" if is_active else "Inactive"}
 """
 
         st.text_area(
             "Preview",
-            profile_text,
+            value=profile_text,
             height=220,
+            disabled=True,
+            key="profile_preview",
         )
 
         st.download_button(
-            "📥 Download Profile",
-            profile_text,
+            label="📥 Download Profile",
+            data=profile_text.encode("utf-8"),
             file_name="profile.txt",
             mime="text/plain",
+            key="download_profile",
             use_container_width=True,
         )
 
     st.divider()
 
-    st.caption(
-        "MegNova AI • User Profile"
-    )            
+    st.caption("MegNova AI • AI Hospital Digital Twin")

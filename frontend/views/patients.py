@@ -14,7 +14,7 @@ def patients_page():
     st.divider()
 
     # =====================================
-    # Fetch Patient Data
+    # Fetch Patients
     # =====================================
 
     with st.spinner("Loading patient records..."):
@@ -22,10 +22,31 @@ def patients_page():
         data = handle_response(response)
 
     if not data:
-        st.info("No patient records found.")
+        st.warning("No patient records found.")
         return
 
     df = pd.DataFrame(data)
+
+    # =====================================
+    # Validate Columns
+    # =====================================
+
+    required_columns = [
+        "patient_id",
+        "full_name",
+        "gender",
+        "date_of_birth",
+        "blood_group",
+        "phone",
+        "email",
+        "is_active",
+    ]
+
+    missing = [col for col in required_columns if col not in df.columns]
+
+    if missing:
+        st.error(f"Missing required columns: {', '.join(missing)}")
+        return
 
     # =====================================
     # Search & Filter
@@ -36,75 +57,47 @@ def patients_page():
     with col1:
         search = st.text_input(
             "🔍 Search Patient",
-            placeholder="Search by patient name...",
+            placeholder="Search by Patient ID or Name",
         )
 
     with col2:
         status = st.selectbox(
             "Status",
-            [
-                "All",
-                "Active",
-                "Inactive",
-            ],
+            ["All", "Active", "Inactive"],
         )
 
     filtered = df.copy()
 
     if search:
         filtered = filtered[
-            filtered["full_name"]
-            .astype(str)
-            .str.contains(
-                search,
-                case=False,
-                na=False,
-            )
+            filtered["full_name"].astype(str).str.contains(search, case=False, na=False)
+            | filtered["patient_id"].astype(str).str.contains(search, case=False, na=False)
         ]
 
     if status == "Active":
-        filtered = filtered[
-            filtered["is_active"] == True
-        ]
+        filtered = filtered[filtered["is_active"]]
 
     elif status == "Inactive":
-        filtered = filtered[
-            filtered["is_active"] == False
-        ]
+        filtered = filtered[~filtered["is_active"]]
 
     # =====================================
     # Dashboard Metrics
     # =====================================
 
     total = len(df)
-
-    active = len(
-        df[df["is_active"] == True]
-    )
-
+    active = len(df[df["is_active"]])
     inactive = total - active
 
     c1, c2, c3 = st.columns(3)
 
-    c1.metric(
-        "👥 Total Patients",
-        total,
-    )
-
-    c2.metric(
-        "✅ Active",
-        active,
-    )
-
-    c3.metric(
-        "❌ Inactive",
-        inactive,
-    )
+    c1.metric("👥 Total Patients", total)
+    c2.metric("🟢 Active", active)
+    c3.metric("🔴 Inactive", inactive)
 
     st.divider()
 
     # =====================================
-    # Patient Table
+    # Display Table
     # =====================================
 
     display_df = filtered[
@@ -120,13 +113,26 @@ def patients_page():
         ]
     ].copy()
 
-    display_df["is_active"] = display_df[
-        "is_active"
-    ].map(
+    display_df["Status"] = display_df["is_active"].map(
         {
             True: "🟢 Active",
             False: "🔴 Inactive",
         }
+    )
+
+    display_df.drop(columns=["is_active"], inplace=True)
+
+    display_df.rename(
+        columns={
+            "patient_id": "Patient ID",
+            "full_name": "Full Name",
+            "gender": "Gender",
+            "date_of_birth": "Date of Birth",
+            "blood_group": "Blood Group",
+            "phone": "Phone",
+            "email": "Email",
+        },
+        inplace=True,
     )
 
     st.subheader("📋 Patient Records")
@@ -146,7 +152,6 @@ def patients_page():
     col1, col2 = st.columns(2)
 
     with col1:
-
         st.download_button(
             "📥 Download CSV",
             display_df.to_csv(index=False),
@@ -156,7 +161,6 @@ def patients_page():
         )
 
     with col2:
-
         if st.button(
             "🔄 Refresh",
             use_container_width=True,
@@ -164,10 +168,6 @@ def patients_page():
             st.rerun()
 
     st.divider()
-
-    # =====================================
-    # Footer
-    # =====================================
 
     st.caption(
         f"Showing {len(filtered)} of {len(df)} patient(s)"

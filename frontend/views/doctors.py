@@ -13,34 +13,63 @@ def doctors_page():
 
     st.divider()
 
-    # =====================================
-    # Add Doctor
-    # =====================================
+    # =====================================================
+    # Register Doctor
+    # =====================================================
 
     st.subheader("➕ Register Doctor")
 
-    with st.form("doctor_form", clear_on_submit=True):
+    with st.form(
+        "doctor_form",
+        clear_on_submit=True,
+    ):
 
-        col1, col2 = st.columns(2)
+        left, right = st.columns(2)
 
-        with col1:
-            full_name = st.text_input("Full Name")
-            email = st.text_input("Email")
-            phone = st.text_input("Phone")
-            department = st.text_input("Department")
-            specialization = st.text_input("Specialization")
+        with left:
 
-        with col2:
-            qualification = st.text_input("Qualification")
+            full_name = st.text_input(
+                "Full Name",
+                key="doctor_name",
+            )
+
+            email = st.text_input(
+                "Email",
+                key="doctor_email",
+            )
+
+            phone = st.text_input(
+                "Phone",
+                key="doctor_phone",
+            )
+
+            department = st.text_input(
+                "Department",
+                key="doctor_department",
+            )
+
+            specialization = st.text_input(
+                "Specialization",
+                key="doctor_specialization",
+            )
+
+        with right:
+
+            qualification = st.text_input(
+                "Qualification",
+                key="doctor_qualification",
+            )
 
             experience_years = st.number_input(
                 "Experience (Years)",
                 min_value=0,
                 step=1,
+                key="doctor_experience",
             )
 
             license_number = st.text_input(
-                "License Number"
+                "License Number",
+                key="doctor_license",
             )
 
             availability = st.selectbox(
@@ -50,6 +79,7 @@ def doctors_page():
                     "Busy",
                     "On Leave",
                 ],
+                key="doctor_availability",
             )
 
         submit = st.form_submit_button(
@@ -57,9 +87,9 @@ def doctors_page():
             use_container_width=True,
         )
 
-    # =====================================
+    # =====================================================
     # Save Doctor
-    # =====================================
+    # =====================================================
 
     if submit:
 
@@ -73,68 +103,86 @@ def doctors_page():
             license_number,
         ]
 
-        if any(not str(field).strip() for field in required_fields):
-            st.warning("Please fill in all required fields.")
-            return
+        if any(
+            not str(field).strip()
+            for field in required_fields
+        ):
 
-        payload = {
-            "full_name": full_name,
-            "email": email,
-            "phone": phone,
-            "department": department,
-            "specialization": specialization,
-            "qualification": qualification,
-            "experience_years": experience_years,
-            "license_number": license_number,
-            "availability": availability,
-        }
-
-        with st.spinner("Adding doctor..."):
-
-            response = post(
-                "/doctors/",
-                json=payload,
+            st.warning(
+                "Please fill in all required fields."
             )
 
-            data = handle_response(response)
+        else:
 
-        if data:
-            st.success("✅ Doctor added successfully.")
-            st.rerun()
+            payload = {
+                "full_name": full_name.strip(),
+                "email": email.strip(),
+                "phone": phone.strip(),
+                "department": department.strip(),
+                "specialization": specialization.strip(),
+                "qualification": qualification.strip(),
+                "experience_years": experience_years,
+                "license_number": license_number.strip(),
+                "availability": availability,
+            }
+
+            with st.spinner(
+                "Adding doctor..."
+            ):
+
+                response = post(
+                    "/doctors/",
+                    json=payload,
+                )
+
+                data = handle_response(response)
+
+            if data:
+
+                st.success(
+                    "✅ Doctor added successfully."
+                )
+
+                st.rerun()
 
     st.divider()
 
-    # =====================================
-    # Doctors List
-    # =====================================
+    # =====================================================
+    # Doctor List
+    # =====================================================
 
     st.subheader("📋 Doctors")
 
-    with st.spinner("Loading doctors..."):
+    with st.spinner(
+        "Loading doctors..."
+    ):
 
         response = get("/doctors/")
         doctors = handle_response(response)
 
     if not doctors:
+
         st.info("No doctors found.")
+
         return
 
     df = pd.DataFrame(doctors)
 
-    # =====================================
+    # =====================================================
     # Search & Filter
-    # =====================================
+    # =====================================================
 
-    col1, col2 = st.columns([3, 1])
+    left, right = st.columns([3, 1])
 
-    with col1:
+    with left:
 
         search = st.text_input(
             "🔍 Search Doctor",
             placeholder="Search by doctor's name...",
+            key="doctor_search",
         )
 
-    with col2:
+    with right:
 
         status = st.selectbox(
             "Availability",
@@ -144,52 +192,79 @@ def doctors_page():
                 "Busy",
                 "On Leave",
             ],
+            key="doctor_status_filter",
         )
 
     filtered = df.copy()
 
-    if search:
+    if (
+        search
+        and "full_name" in filtered.columns
+    ):
 
         filtered = filtered[
             filtered["full_name"]
             .astype(str)
-            .str.contains(search, case=False, na=False)
+            .str.contains(
+                search,
+                case=False,
+                na=False,
+            )
         ]
 
-    if status != "All":
+    if (
+        status != "All"
+        and "availability" in filtered.columns
+    ):
 
         filtered = filtered[
             filtered["availability"] == status
         ]
 
-    # =====================================
+    # =====================================================
     # Metrics
-    # =====================================
+    # =====================================================
 
     total = len(df)
 
     available = len(
-        df[df["availability"] == "Available"]
+        df[
+            df["availability"] == "Available"
+        ]
     )
 
     busy = len(
-        df[df["availability"] == "Busy"]
+        df[
+            df["availability"] == "Busy"
+        ]
     )
 
     c1, c2, c3 = st.columns(3)
 
-    c1.metric("👨‍⚕️ Total", total)
-    c2.metric("🟢 Available", available)
-    c3.metric("🔴 Busy", busy)
+    c1.metric(
+        "👨‍⚕️ Total",
+        total,
+    )
+
+    c2.metric(
+        "🟢 Available",
+        available,
+    )
+
+    c3.metric(
+        "🔴 Busy",
+        busy,
+    )
 
     st.divider()
 
-    # =====================================
-    # Table
-    # =====================================
+    # =====================================================
+    # Doctor Table
+    # =====================================================
 
-    display_df = filtered[
-        [
+    display_columns = [
+        column
+        for column in [
             "doctor_id",
             "full_name",
             "department",
@@ -199,37 +274,51 @@ def doctors_page():
             "phone",
             "email",
         ]
+        if column in filtered.columns
     ]
 
     st.dataframe(
-        display_df,
+        filtered[display_columns],
         use_container_width=True,
         hide_index=True,
     )
 
-    # =====================================
+    # =====================================================
     # Actions
-    # =====================================
+    # =====================================================
 
-    col1, col2 = st.columns(2)
+    left, right = st.columns(2)
 
-    with col1:
+    with left:
+
+        csv = (
+            filtered[display_columns]
+            .to_csv(index=False)
+            .encode("utf-8")
+        )
 
         st.download_button(
             "📥 Download CSV",
-            display_df.to_csv(index=False),
+            data=csv,
             file_name="doctors.csv",
             mime="text/csv",
+            key="download_doctors_csv",
             use_container_width=True,
         )
 
-    with col2:
+    with right:
 
         if st.button(
             "🔄 Refresh",
+            key="refresh_doctors",
             use_container_width=True,
         ):
+
             st.rerun()
+
+    # =====================================================
+    # Footer
+    # =====================================================
 
     st.divider()
 

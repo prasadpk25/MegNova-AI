@@ -5,67 +5,116 @@ import plotly.express as px
 from utils.api_client import get
 
 
+# ==========================================================
+# Hospital Analytics Dashboard
+# ==========================================================
+
 def analytics_page():
+    """Hospital Analytics Dashboard"""
 
     st.title("📊 Hospital Analytics Dashboard")
     st.caption("Real-time insights for MegNova AI")
 
-    if st.button("🔄 Refresh Dashboard", use_container_width=True):
+    if st.button(
+        "🔄 Refresh Dashboard",
+        key="analytics_refresh",
+        use_container_width=True,
+    ):
         st.rerun()
+
+    # =====================================================
+    # Load Analytics
+    # =====================================================
 
     with st.spinner("Loading analytics..."):
 
         response = get("/analytics/dashboard")
 
     if response.status_code != 200:
-        st.error("Unable to load analytics.")
-        st.code(response.text)
+
+        try:
+            message = response.json().get(
+                "detail",
+                "Unable to load analytics.",
+            )
+        except Exception:
+            message = "Unable to load analytics."
+
+        st.error(message)
         return
 
     data = response.json()
 
-    total_patients = data["total_patients"]
-    active_patients = data["active_patients"]
+    # =====================================================
+    # Metrics
+    # =====================================================
 
-    total_doctors = data["total_doctors"]
-    active_doctors = data["active_doctors"]
+    total_patients = data.get("total_patients", 0)
+    active_patients = data.get("active_patients", 0)
 
-    total_reports = data["total_reports"]
+    total_doctors = data.get("total_doctors", 0)
+    active_doctors = data.get("active_doctors", 0)
 
-    departments = pd.DataFrame(data["departments"])
-    specializations = pd.DataFrame(data["specializations"])
-    report_types = pd.DataFrame(data["report_types"])
+    total_reports = data.get("total_reports", 0)
+
+    # =====================================================
+    # DataFrames
+    # =====================================================
+
+    departments = pd.DataFrame(
+        data.get("departments", [])
+    )
+
+    specializations = pd.DataFrame(
+        data.get("specializations", [])
+    )
+
+    report_types = pd.DataFrame(
+        data.get("report_types", [])
+    )
+
+    # =====================================================
+    # Overview
+    # =====================================================
 
     st.divider()
 
-    st.subheader("Overview")
+    st.subheader("📈 Overview")
 
     c1, c2, c3 = st.columns(3)
 
     c1.metric(
-        "Patients",
-        total_patients,
+        label="Patients",
+        value=total_patients,
         delta=f"{active_patients} Active",
     )
 
     c2.metric(
-        "Doctors",
-        total_doctors,
+        label="Doctors",
+        value=total_doctors,
         delta=f"{active_doctors} Active",
     )
 
     c3.metric(
-        "Reports",
-        total_reports,
+        label="Reports",
+        value=total_reports,
     )
+
+    # =====================================================
+    # Charts
+    # =====================================================
 
     st.divider()
 
     col1, col2 = st.columns(2)
 
+    # -----------------------------------------------------
+    # Doctors by Department
+    # -----------------------------------------------------
+
     with col1:
 
-        st.subheader("Doctors by Department")
+        st.subheader("🏥 Doctors by Department")
 
         if not departments.empty:
 
@@ -79,6 +128,7 @@ def analytics_page():
             fig.update_layout(
                 xaxis_title="Department",
                 yaxis_title="Doctors",
+                height=420,
             )
 
             st.plotly_chart(
@@ -90,9 +140,13 @@ def analytics_page():
 
             st.info("No department data available.")
 
+    # -----------------------------------------------------
+    # Report Types
+    # -----------------------------------------------------
+
     with col2:
 
-        st.subheader("Report Types")
+        st.subheader("📄 Report Types")
 
         if not report_types.empty:
 
@@ -101,6 +155,10 @@ def analytics_page():
                 names="type",
                 values="count",
                 hole=0.45,
+            )
+
+            fig.update_layout(
+                height=420,
             )
 
             st.plotly_chart(
@@ -112,9 +170,13 @@ def analytics_page():
 
             st.info("No report data available.")
 
+    # =====================================================
+    # Specializations
+    # =====================================================
+
     st.divider()
 
-    st.subheader("Doctor Specializations")
+    st.subheader("👨‍⚕️ Doctor Specializations")
 
     if not specializations.empty:
 
@@ -128,6 +190,7 @@ def analytics_page():
         fig.update_layout(
             xaxis_title="Specialization",
             yaxis_title="Doctors",
+            height=420,
         )
 
         st.plotly_chart(
@@ -139,56 +202,70 @@ def analytics_page():
 
         st.info("No specialization data available.")
 
+    # =====================================================
+    # Analytics Tables
+    # =====================================================
+
     st.divider()
 
-    st.subheader("Analytics Data")
+    st.subheader("📋 Analytics Data")
 
-    st.write("### Departments")
+    st.markdown("#### Departments")
+
     st.dataframe(
         departments,
         use_container_width=True,
         hide_index=True,
     )
 
-    st.write("### Specializations")
+    st.markdown("#### Specializations")
+
     st.dataframe(
         specializations,
         use_container_width=True,
         hide_index=True,
     )
 
-    st.write("### Report Types")
+    st.markdown("#### Report Types")
+
     st.dataframe(
         report_types,
         use_container_width=True,
         hide_index=True,
     )
 
+    # =====================================================
+    # Export Analytics
+    # =====================================================
+
     st.divider()
 
-    export = pd.DataFrame({
-        "Metric": [
-            "Total Patients",
-            "Active Patients",
-            "Total Doctors",
-            "Active Doctors",
-            "Total Reports",
-        ],
-        "Value": [
-            total_patients,
-            active_patients,
-            total_doctors,
-            active_doctors,
-            total_reports,
-        ],
-    })
+    export = pd.DataFrame(
+        {
+            "Metric": [
+                "Total Patients",
+                "Active Patients",
+                "Total Doctors",
+                "Active Doctors",
+                "Total Reports",
+            ],
+            "Value": [
+                total_patients,
+                active_patients,
+                total_doctors,
+                active_doctors,
+                total_reports,
+            ],
+        }
+    )
 
-    csv = export.to_csv(index=False)
+    csv = export.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        "📥 Download Analytics",
-        csv,
-        "analytics.csv",
-        "text/csv",
+        label="📥 Download Analytics",
+        data=csv,
+        file_name="analytics.csv",
+        mime="text/csv",
+        key="download_analytics",
         use_container_width=True,
     )
