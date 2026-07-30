@@ -33,8 +33,9 @@ st.set_page_config(
     page_title="MegNova AI",
     page_icon="🏥",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
+st.sidebar.empty()
 
 # ==========================================================
 # SESSION
@@ -56,52 +57,43 @@ if not st.session_state.get("logged_in", False):
 
 st.markdown(
     """
-<style>
+    <style>
 
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
+    #MainMenu {
+        visibility: hidden;
+    }
 
-.block-container{
-    padding-top:1rem;
-    padding-bottom:2rem;
-    padding-left:2rem;
-    padding-right:2rem;
-}
+    footer {
+        visibility: hidden;
+    }
 
-section[data-testid="stSidebar"]{
-    background:#0F172A;
-}
+    header {
+        visibility: visible;
+    }
 
-section[data-testid="stSidebar"] *{
-    color:white;
-}
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
 
-.stButton>button{
-    width:100%;
-    height:45px;
-    border-radius:10px;
-    font-weight:600;
-}
+    section[data-testid="stSidebar"] {
+        background-color: #0F172A;
+    }
 
-div[data-testid="metric-container"]{
-    border:1px solid #E5E7EB;
-    border-radius:12px;
-    padding:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
+    section[data-testid="stSidebar"] * {
+        color: white;
+    }
 
-[data-testid="stDataFrame"]{
-    border-radius:12px;
-}
+    div[data-testid="metric-container"] {
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 14px;
+    }
 
-hr{
-    margin-top:0.8rem;
-    margin-bottom:0.8rem;
-}
-
-</style>
-""",
+    </style>
+    """,
     unsafe_allow_html=True,
 )
 
@@ -109,7 +101,11 @@ hr{
 # SIDEBAR
 # ==========================================================
 
-page = sidebar()
+try:
+    page = sidebar()
+except Exception as e:
+    st.error(e)
+    page = "Dashboard"
 
 # ==========================================================
 # ROUTING
