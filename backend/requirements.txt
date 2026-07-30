@@ -29,7 +29,7 @@ qdrant-client
 
 easyocr
 pillow
-opencv-python
+opencv-python-headless
 
 python-docx
 pymupdf

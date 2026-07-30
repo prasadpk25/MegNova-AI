@@ -1,144 +1,59 @@
-# ==========================================
 # Python
-# ==========================================
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Compiled Python files
 *.so
 
-# ==========================================
-# Virtual Environment
-# ==========================================
+# Virtual environments
 venv/
 .venv/
 env/
 ENV/
 
-# ==========================================
-# Environment Variables
-# ==========================================
+# Environment variables
 .env
 .env.*
 
-# ==========================================
-# VS Code
-# ==========================================
+# IDE files
 .vscode/
-
-# ==========================================
-# PyCharm
-# ==========================================
 .idea/
 
-# ==========================================
 # Jupyter
-# ==========================================
 .ipynb_checkpoints/
 
-# ==========================================
-# Pytest
-# ==========================================
+# Testing
 .pytest_cache/
 .coverage
 htmlcov/
-
-# ==========================================
-# MyPy
-# ==========================================
 .mypy_cache/
-
-# ==========================================
-# Ruff
-# ==========================================
 .ruff_cache/
 
-# ==========================================
 # Logs
-# ==========================================
 *.log
 
-# ==========================================
-# SQLite
-# ==========================================
+# Databases
 *.sqlite3
 *.db
 
-# ==========================================
 # Uploads
-# (Remove this line if you WANT uploaded
-# medical reports stored in Git)
-# ==========================================
 backend/App/uploads/
+backend/App/static/uploads/
 
-# ==========================================
-# Alembic
-# ==========================================
-alembic/versions/*.pyc
+# Qdrant
+backend/qdrant_db/
 
-# ==========================================
-# macOS
-# ==========================================
-.DS_Store
-
-# ==========================================
-# Windows
-# ==========================================
-Thumbs.db
-desktop.ini
-
-# ==========================================
 # Streamlit
-# ==========================================
 .streamlit/secrets.toml
 
-# ==========================================
-# Build
-# ==========================================
+# Build files
 dist/
 build/
 *.egg-info/
 
-# ==========================================
-# Temporary Files
-# ==========================================
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
 *.tmp
 *.temp
-# Python
-__pycache__/
-*.pyc
-
-# Virtual Environment
-venv/
-
-# Environment Variables
-.env
-
-# VS Code
-.vscode/
-
-# Uploads
-backend/App/static/uploads/
-
-# Logs
-*.log
-# Virtual Environment
-venv/
-.venv/
-
-# Python
-__pycache__/
-*.pyc
-
-# Qdrant Database
-backend/qdrant_db/
-
-# Uploads
-backend/App/uploads/
-
-# IDE
-.vscode/
-
-# Logs
-*.log
