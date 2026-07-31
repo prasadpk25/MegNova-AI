@@ -5,73 +5,46 @@ from fastapi.staticfiles import StaticFiles
 
 from App.database.database import Base, engine
 
-# Import all models
-import App.models
+# ------------------------------------------------------
+# Import models safely
+# ------------------------------------------------------
 
-# Import API Routers
+try:
+    import App.models
+except Exception as e:
+    print(f"Model loading error: {e}")
+
+# ------------------------------------------------------
+# Import lightweight routers only
+# ------------------------------------------------------
+
 from App.api import (
     auth,
     patient,
     doctor,
     appointment,
-    report,
-    patient_history,
-    report_compare,
     dashboard,
-    chat,
-    clinical_guidelines,
-    analytics,
 )
 
-# Create Database Tables
+# ------------------------------------------------------
+# Create database tables
+# ------------------------------------------------------
+
 Base.metadata.create_all(bind=engine)
 
-# ======================================================
-# FastAPI Application
-# ======================================================
+# ------------------------------------------------------
+# FastAPI application
+# ------------------------------------------------------
 
 app = FastAPI(
     title="MegNova AI API",
     version="1.0.0",
-    description="""
-# 🏥 MegNova AI
-
-MegNova AI is an AI-powered Smart Hospital Management System that assists healthcare professionals using Artificial Intelligence, OCR, Retrieval-Augmented Generation (RAG), and Large Language Models.
-
-## Core Features
-
-- 🔐 JWT Authentication
-- 👨‍⚕️ Doctor Management
-- 🧑‍🤝‍🧑 Patient Management
-- 📅 Appointment Scheduling
-- 📄 Medical Report Upload
-- 🔍 OCR Report Extraction
-- 🤖 AI Medical Report Summarization
-- 📚 Clinical Guideline Search (RAG)
-- 💊 Drug Interaction Checker
-- 🕒 Patient Timeline
-- 🧠 AI Patient History
-- 📑 Report Comparison
-- 📊 Analytics Dashboard
-- 💬 AI Medical Assistant
-
-## Technology Stack
-
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- Ollama (Llama 3)
-- Qdrant Vector Database
-- Sentence Transformers
-- EasyOCR
-- Streamlit
-- Swagger UI
-""",
+    description="MegNova AI demonstration deployment",
 )
 
-# ======================================================
-# Static Files
-# ======================================================
+# ------------------------------------------------------
+# Static files
+# ------------------------------------------------------
 
 app.mount(
     "/static",
@@ -79,64 +52,56 @@ app.mount(
     name="static",
 )
 
-# ======================================================
+# ------------------------------------------------------
 # CORS
-# ======================================================
+# ------------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # Restrict in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ======================================================
-# Register API Routers
-# ======================================================
+# ------------------------------------------------------
+# Active routers
+# ------------------------------------------------------
 
 app.include_router(auth.router)
 app.include_router(patient.router)
 app.include_router(doctor.router)
 app.include_router(appointment.router)
-app.include_router(report.router)
-app.include_router(patient_history.router)
-app.include_router(report_compare.router)
 app.include_router(dashboard.router)
-app.include_router(chat.router)
-app.include_router(clinical_guidelines.router)
-app.include_router(analytics.router)
 
-# ======================================================
-# Root Endpoint
-# ======================================================
+# ------------------------------------------------------
+# Root endpoint
+# ------------------------------------------------------
 
 @app.get("/", tags=["Root"])
 def root():
     return {
         "project": "MegNova AI",
         "version": "1.0.0",
-        "status": "Backend Running Successfully 🚀",
+        "status": "Running",
         "documentation": "/docs",
     }
 
-
-# ======================================================
-# Health Check
-# ======================================================
+# ------------------------------------------------------
+# Health check
+# ------------------------------------------------------
 
 @app.get("/health", tags=["Health"])
 def health():
     return {
         "status": "healthy",
-        "database": "Connected",
-        "api": "Running",
+        "database": "connected",
+        "api": "running",
     }
 
-
-# ======================================================
+# ------------------------------------------------------
 # Favicon
-# ======================================================
+# ------------------------------------------------------
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
