@@ -1,3 +1,4 @@
+
 from sqlalchemy import (
     Boolean,
     Column,
@@ -19,63 +20,17 @@ class Patient(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    patient_id = Column(
-        String(20),
-        unique=True,
-        index=True,
-        nullable=False,
-    )
-
-    full_name = Column(
-        String(100),
-        nullable=False,
-    )
-
-    gender = Column(
-        String(20),
-        nullable=False,
-    )
-
-    date_of_birth = Column(
-        Date,
-        nullable=False,
-    )
-
-    blood_group = Column(
-        String(10),
-        nullable=False,
-    )
-
-    phone = Column(
-        String(20),
-        nullable=False,
-    )
-
-    email = Column(
-        String(255),
-        unique=True,
-        nullable=False,
-    )
-
-    address = Column(
-        Text,
-        nullable=False,
-    )
-
-    emergency_contact = Column(
-        String(20),
-        nullable=False,
-    )
-
-    allergies = Column(
-        Text,
-        nullable=True,
-    )
-
-    medical_history = Column(
-        Text,
-        nullable=True,
-    )
+    patient_id = Column(String(20), unique=True, index=True, nullable=False)
+    full_name = Column(String(100), nullable=False)
+    gender = Column(String(20), nullable=False)
+    date_of_birth = Column(Date, nullable=False)
+    blood_group = Column(String(10), nullable=False)
+    phone = Column(String(20), nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
+    address = Column(Text, nullable=False)
+    emergency_contact = Column(String(20), nullable=False)
+    allergies = Column(Text, nullable=True)
+    medical_history = Column(Text, nullable=True)
 
     created_by = Column(
         Integer,
@@ -83,11 +38,7 @@ class Patient(Base):
         nullable=False,
     )
 
-    is_active = Column(
-        Boolean,
-        default=True,
-        nullable=False,
-    )
+    is_active = Column(Boolean, default=True, nullable=False)
 
     created_at = Column(
         DateTime(timezone=True),
@@ -110,4 +61,16 @@ class Patient(Base):
     reports = relationship(
         "Report",
         back_populates="patient",
-    )  
+    )
+
+    observations = relationship(
+        "Observation",
+        back_populates="patient",
+        cascade="all, delete-orphan",
+    )
+
+    timeline_events = relationship(
+        "TimelineEvent",
+        back_populates="patient",
+        cascade="all, delete-orphan",
+    )
