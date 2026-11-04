@@ -12,15 +12,17 @@ from App.schemas.patient import (
 from App.services.patient_service import PatientService
 from App.services.timeline_service import get_patient_timeline
 
+
 router = APIRouter(
     prefix="/patients",
     tags=["Patients"],
 )
 
 
-# ----------------------------------------------------
-# Create Patient
-# ----------------------------------------------------
+# ============================================================
+# CREATE PATIENT
+# ============================================================
+
 @router.post(
     "/",
     response_model=PatientResponse,
@@ -38,9 +40,10 @@ def create_patient(
     )
 
 
-# ----------------------------------------------------
-# Get All Patients
-# ----------------------------------------------------
+# ============================================================
+# GET ALL PATIENTS
+# ============================================================
+
 @router.get(
     "/",
     response_model=list[PatientResponse],
@@ -52,9 +55,11 @@ def get_all_patients(
     return PatientService.get_all_patients(db)
 
 
-# ----------------------------------------------------
-# Get Patient By ID
-# ----------------------------------------------------
+# ============================================================
+# GET PATIENT BY PATIENT ID
+# Example: MN000001
+# ============================================================
+
 @router.get(
     "/{patient_id}",
     response_model=PatientResponse,
@@ -65,8 +70,8 @@ def get_patient(
     current_user: User = Depends(get_current_user),
 ):
     patient = PatientService.get_patient_by_id(
-        db,
-        patient_id,
+        db=db,
+        patient_id=patient_id,
     )
 
     if not patient:
@@ -78,22 +83,24 @@ def get_patient(
     return patient
 
 
-# ----------------------------------------------------
-# Update Patient
-# ----------------------------------------------------
+# ============================================================
+# UPDATE PATIENT
+# Example: /patients/MN000001
+# ============================================================
+
 @router.put(
     "/{patient_id}",
     response_model=PatientResponse,
 )
 def update_patient(
-    patient_id: int,
+    patient_id: str,
     patient: PatientUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     db_patient = PatientService.get_patient_by_id(
-        db,
-        patient_id,
+        db=db,
+        patient_id=patient_id,
     )
 
     if not db_patient:
@@ -103,26 +110,28 @@ def update_patient(
         )
 
     return PatientService.update_patient(
-        db,
-        db_patient,
-        patient,
+        db=db,
+        db_patient=db_patient,
+        patient=patient,
     )
 
 
-# ----------------------------------------------------
-# Delete Patient
-# ----------------------------------------------------
+# ============================================================
+# DELETE PATIENT
+# Example: /patients/MN000001
+# ============================================================
+
 @router.delete(
     "/{patient_id}",
 )
 def delete_patient(
-    patient_id: int,
+    patient_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     db_patient = PatientService.get_patient_by_id(
-        db,
-        patient_id,
+        db=db,
+        patient_id=patient_id,
     )
 
     if not db_patient:
@@ -132,8 +141,8 @@ def delete_patient(
         )
 
     PatientService.delete_patient(
-        db,
-        db_patient,
+        db=db,
+        db_patient=db_patient,
     )
 
     return {
@@ -141,14 +150,16 @@ def delete_patient(
     }
 
 
-# ----------------------------------------------------
-# Patient Timeline
-# ----------------------------------------------------
+# ============================================================
+# PATIENT TIMELINE
+# Example: /patients/MN000001/timeline
+# ============================================================
+
 @router.get(
     "/{patient_id}/timeline",
 )
 def patient_timeline(
-    patient_id: int,
+    patient_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

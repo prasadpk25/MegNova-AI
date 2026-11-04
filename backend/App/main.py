@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-
+from App.api import chat
 from App.database.database import Base, engine
 
 # ------------------------------------------------------
@@ -73,6 +73,7 @@ app.include_router(patient.router)
 app.include_router(doctor.router)
 app.include_router(appointment.router)
 app.include_router(dashboard.router)
+app.include_router(chat.router)
 
 # ------------------------------------------------------
 # Root endpoint

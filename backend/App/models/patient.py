@@ -110,4 +110,4 @@ class Patient(Base):
     reports = relationship(
         "Report",
         back_populates="patient",
-    )
+    )  

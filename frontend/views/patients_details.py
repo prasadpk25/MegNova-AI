@@ -54,10 +54,10 @@ def patient_detail_page():
         st.info("No patients found.")
         return
 
-    patient_map = {
-        f"{patient['patient_id']} - {patient['full_name']}": patient["id"]
+    patient_options = {
+        f"{patient['patient_id']} - {patient['full_name']}": patient["patient_id"]
         for patient in patients
-    }
+}
 
     selected_patient = st.selectbox(
         "Select Patient",
