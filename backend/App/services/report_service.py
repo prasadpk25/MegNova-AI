@@ -96,7 +96,7 @@ class ReportService:
             if (
                 not report.extracted_text
                 and report.file_path.lower().endswith(
-                    (".png", ".jpg", ".jpeg", ".pdf")
+                    (".png", ".jpg", ".jpeg", ".pdf", ".docx")
                 )
             ):
                 report.extracted_text = extract_text(

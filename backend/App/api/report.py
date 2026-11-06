@@ -140,6 +140,21 @@ def summarize_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    result = ReportService.summarize_existing_report(
+        db,
+        report_id,
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Report not found.",
+        )
+
+    return {
+        "message": "Summary processing completed.",
+        "summary": result.get("summary", "No summary generated."),
+    }
     report = ReportService.summarize_existing_report(
         db,
         report_id,
