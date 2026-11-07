@@ -1,3 +1,4 @@
+
 from sqlalchemy.orm import Session
 
 from App.models.report import Report
@@ -24,11 +25,9 @@ class ReportService:
         uploaded_by: int,
     ) -> Report:
         """
-        Fast upload.
-        Save report details only.
-        OCR, AI Summary and Embedding are generated later.
+        Save report details during upload.
+        OCR, AI summary and embedding are generated later.
         """
-
         return ReportRepository.create_report(
             db=db,
             report=report,
@@ -40,9 +39,7 @@ class ReportService:
         )
 
     @staticmethod
-    def get_all_reports(
-        db: Session,
-    ) -> list[Report]:
+    def get_all_reports(db: Session) -> list[Report]:
         return ReportRepository.get_all_reports(db)
 
     @staticmethod
@@ -50,28 +47,19 @@ class ReportService:
         db: Session,
         report_id: int,
     ) -> Report | None:
-        return ReportRepository.get_report_by_id(
-            db,
-            report_id,
-        )
+        return ReportRepository.get_report_by_id(db, report_id)
 
     @staticmethod
     def delete_report(
         db: Session,
         report_id: int,
     ) -> Report | None:
-        report = ReportRepository.get_report_by_id(
-            db,
-            report_id,
-        )
+        report = ReportRepository.get_report_by_id(db, report_id)
 
         if not report:
             return None
 
-        return ReportRepository.delete_report(
-            db,
-            report,
-        )
+        return ReportRepository.delete_report(db, report)
 
     @staticmethod
     def summarize_existing_report(
@@ -79,44 +67,54 @@ class ReportService:
         report_id: int,
     ) -> dict | None:
         """
-        Generate OCR, AI Summary and Vector Embedding.
+        Extract report text and save AI summary.
+        Vector indexing is performed separately so that
+        an indexing failure cannot undo the saved summary.
         """
 
-        report = ReportRepository.get_report_by_id(
-            db,
-            report_id,
-        )
+        report = ReportRepository.get_report_by_id(db, report_id)
 
         if not report:
             return None
 
+        # STEP 1: OCR text extraction
         try:
-
-            # OCR
             if (
                 not report.extracted_text
                 and report.file_path.lower().endswith(
                     (".png", ".jpg", ".jpeg", ".pdf", ".docx")
                 )
             ):
-                report.extracted_text = extract_text(
-                    report.file_path
-                )
+                report.extracted_text = extract_text(report.file_path)
 
-            if not report.extracted_text.strip():
+            if not (report.extracted_text or "").strip():
                 return {
                     "summary": "No readable text found in the report."
                 }
 
-            # AI Summary
-            report.summary = summarize_report(
-                report.extracted_text
-            )
+            # STEP 2: Generate AI summary using Groq
+            report.summary = summarize_report(report.extracted_text)
 
-            # Embedding
-            embedding = generate_embedding(
-                report.extracted_text
+            # STEP 3: Save summary and extracted text in PostgreSQL
+            db.commit()
+            db.refresh(report)
+
+        except Exception as error:
+            db.rollback()
+            print(
+                f"Report summarization error: "
+                f"{type(error).__name__}: {error}"
             )
+            return {
+                "summary": (
+                    f"Summary generation failed: {type(error).__name__}"
+                )
+            }
+
+        # STEP 4: Generate and store vector embedding
+        # This is optional and must not affect the saved summary.
+        try:
+            embedding = generate_embedding(report.extracted_text)
 
             if embedding:
                 create_collection()
@@ -126,25 +124,28 @@ class ReportService:
                     embedding=embedding,
                     metadata={
                         "patient_id": report.patient_id,
-                        "patient_name": report.patient.full_name,
+                        "patient_name": (
+                            report.patient.full_name
+                            if report.patient else None
+                        ),
                         "doctor_id": report.doctor_id,
-                        "doctor_name": report.doctor.full_name,
+                        "doctor_name": (
+                            report.doctor.full_name
+                            if report.doctor else None
+                        ),
                         "report_name": report.report_name,
                         "report_type": report.report_type,
                         "summary": report.summary,
                     },
                 )
 
-            db.commit()
-            db.refresh(report)
+        except Exception as error:
+            print(
+                f"Report embedding error: "
+                f"{type(error).__name__}: {error}"
+            )
 
-            return {
-                "summary": report.summary
-            }
-
-        except Exception as e:
-            db.rollback()
-
-            return {
-                "summary": f"Error generating summary: {str(e)}"
-            }
+        # STEP 5: Return the saved summary
+        return {
+            "summary": report.summary
+        }

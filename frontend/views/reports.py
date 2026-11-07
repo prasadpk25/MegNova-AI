@@ -3,7 +3,9 @@ import streamlit as st
 
 from utils.api_client import delete, get, post
 from utils.helpers import handle_response
-
+from utils.api_client import delete, get, post
+from utils.pdf_generator import generate_summary_pdf
+from utils.helpers import handle_response
 # ==========================================================
 # Constants
 # ==========================================================
@@ -478,20 +480,38 @@ def ai_summary_section(df):
     summary = selected_row["SummaryText"]
 
     if summary:
-
         st.text_area(
-            "Summary",
+            "AI Medical Summary",
             value=summary,
-            height=220,
+            height=300,
             disabled=True,
             key="summary_viewer",
         )
 
-    else:
-
-        st.info(
-            "No AI summary available for this report."
+        pdf_bytes = generate_summary_pdf(
+            report_name=str(selected_row["Report"]),
+            patient_name=str(selected_row["Patient"]),
+            doctor_name=str(selected_row["Doctor"]),
+            report_type=str(selected_row["Type"]),
+            report_date=str(selected_row["Created"]),
+            summary=summary,
         )
+
+        safe_name = "".join(
+            c if c.isalnum() or c in ("-", "_") else "_"
+            for c in str(selected_row["Report"])
+        )
+
+        st.download_button(
+            label="Download AI Summary as PDF",
+            data=pdf_bytes,
+            file_name=f"{safe_name}_summary.pdf",
+            mime="application/pdf",
+            key=f"download_summary_{report_db_id}",
+            width="stretch",
+        )
+    else:
+        st.info("No AI summary available for this report.")
 
     st.divider()
 

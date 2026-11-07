@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from uuid import uuid4
 import shutil
@@ -19,6 +20,7 @@ from App.models.user import User
 from App.schemas.report import ReportCreate
 from App.services.report_service import ReportService
 
+
 router = APIRouter(
     prefix="/reports",
     tags=["Medical Reports"],
@@ -39,6 +41,7 @@ ALLOWED_EXTENSIONS = {
 # ======================================================
 # Upload Report
 # ======================================================
+
 @router.post(
     "/upload",
     status_code=status.HTTP_201_CREATED,
@@ -52,7 +55,7 @@ def upload_report(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    extension = Path(file.filename).suffix.lower()
+    extension = Path(file.filename or "").suffix.lower()
 
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -87,19 +90,23 @@ def upload_report(
             "report": created_report,
         }
 
-    except Exception as e:
+    except Exception as error:
         if file_path.exists():
             file_path.unlink()
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
+            detail="Unable to upload medical report.",
+        ) from error
+
+    finally:
+        file.file.close()
 
 
 # ======================================================
 # Get All Reports
 # ======================================================
+
 @router.get("/")
 def get_all_reports(
     db: Session = Depends(get_db),
@@ -111,6 +118,7 @@ def get_all_reports(
 # ======================================================
 # Get Report By ID
 # ======================================================
+
 @router.get("/{report_id}")
 def get_report(
     report_id: int,
@@ -134,6 +142,7 @@ def get_report(
 # ======================================================
 # Generate AI Summary
 # ======================================================
+
 @router.post("/summarize/{report_id}")
 def summarize_report(
     report_id: int,
@@ -153,28 +162,17 @@ def summarize_report(
 
     return {
         "message": "Summary processing completed.",
-        "summary": result.get("summary", "No summary generated."),
-    }
-    report = ReportService.summarize_existing_report(
-        db,
-        report_id,
-    )
-
-    if not report:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Report not found.",
-        )
-
-    return {
-        "message": "Summary generated successfully.",
-        "summary": report.summary,
+        "summary": result.get(
+            "summary",
+            "No summary generated.",
+        ),
     }
 
 
 # ======================================================
 # Delete Report
 # ======================================================
+
 @router.delete("/{report_id}")
 def delete_report(
     report_id: int,
