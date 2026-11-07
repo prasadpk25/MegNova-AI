@@ -1,11 +1,11 @@
-import streamlit as st
+﻿import streamlit as st
 
 from utils.api_client import post
 
 
 def chatbot_page():
 
-    st.title("🤖 MegNova AI Medical Assistant")
+    st.title("ðŸ¤– MegNova AI Medical Assistant")
 
     st.caption(
         "Ask questions about uploaded medical reports using AI-powered Retrieval-Augmented Generation (RAG)."
@@ -23,7 +23,7 @@ def chatbot_page():
             {
                 "role": "assistant",
                 "content": (
-                    "👋 Hello Doctor!\n\n"
+                    "ðŸ‘‹ Hello Doctor!\n\n"
                     "I can answer questions based on uploaded medical reports.\n\n"
                     "**Example Questions**\n"
                     "- Summarize Rahul Sharma's reports\n"
@@ -45,9 +45,9 @@ def chatbot_page():
     with right:
 
         if st.button(
-            "🗑️ Clear",
+            "ðŸ—‘ï¸ Clear",
             key="clear_chat_history",
-            use_container_width=True,
+            width="stretch",
         ):
 
             st.session_state.messages = [
@@ -173,7 +173,7 @@ def chatbot_page():
 
     st.divider()
 
-    st.subheader("💡 Suggested Questions")
+    st.subheader("ðŸ’¡ Suggested Questions")
 
     suggestions = [
         "Summarize the patient's reports.",
@@ -188,7 +188,7 @@ def chatbot_page():
 
     for question in suggestions:
 
-        st.markdown(f"• {question}")
+        st.markdown(f"â€¢ {question}")
 
     # =====================================================
     # Footer
@@ -197,5 +197,5 @@ def chatbot_page():
     st.divider()
 
     st.caption(
-        "🏥 MegNova AI • Medical RAG Assistant"
+        "ðŸ¥ MegNova AI â€¢ Medical RAG Assistant"
     )

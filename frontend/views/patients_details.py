@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 
 from datetime import date
@@ -8,7 +8,7 @@ from utils.api_client import get, post, delete
 
 def patient_detail_page():
 
-    st.title("👤 Patient Details")
+    st.title("ðŸ‘¤ Patient Details")
     st.caption(
         "View complete patient information and medical history."
     )
@@ -18,9 +18,9 @@ def patient_detail_page():
     # =====================================================
 
     if st.button(
-        "🔄 Refresh",
+        "ðŸ”„ Refresh",
         key="patient_refresh",
-        use_container_width=True,
+        width="stretch",
     ):
         st.rerun()
 
@@ -61,11 +61,11 @@ def patient_detail_page():
 
     selected_patient = st.selectbox(
         "Select Patient",
-        list(patient_map.keys()),
+        list(patient_options.keys()),
         key="patient_selector",
     )
 
-    patient_id = patient_map[selected_patient]
+    patient_id = patient_options[selected_patient]
 
     # =====================================================
     # Load Selected Patient
@@ -168,11 +168,11 @@ def patient_detail_page():
 
         if is_active:
 
-            st.success("🟢 Active")
+            st.success("ðŸŸ¢ Active")
 
         else:
 
-            st.error("🔴 Inactive")
+            st.error("ðŸ”´ Inactive")
 
     st.divider()
 
@@ -180,7 +180,7 @@ def patient_detail_page():
     # Basic Information
     # =====================================================
 
-    st.subheader("📋 Basic Information")
+    st.subheader("ðŸ“‹ Basic Information")
 
     c1, c2, c3 = st.columns(3)
 
@@ -205,7 +205,7 @@ def patient_detail_page():
     # Contact Information
     # =====================================================
 
-    st.subheader("📞 Contact Information")
+    st.subheader("ðŸ“ž Contact Information")
 
     c1, c2 = st.columns(2)
 
@@ -248,7 +248,7 @@ def patient_detail_page():
     # Medical Information
     # =====================================================
 
-    st.subheader("🩺 Medical Information")
+    st.subheader("ðŸ©º Medical Information")
 
     st.text_area(
         "Medical History",
@@ -292,9 +292,9 @@ def patient_detail_page():
 
     tab1, tab2, tab3 = st.tabs(
         [
-            "📄 Reports",
-            "🕒 Timeline",
-            "🤖 AI Assistant",
+            "ðŸ“„ Reports",
+            "ðŸ•’ Timeline",
+            "ðŸ¤– AI Assistant",
         ]
     )
     # =====================================================
@@ -303,7 +303,7 @@ def patient_detail_page():
 
     with tab1:
 
-        st.subheader("📄 Patient Reports")
+        st.subheader("ðŸ“„ Patient Reports")
 
         with st.spinner("Loading reports..."):
 
@@ -340,7 +340,7 @@ def patient_detail_page():
                 report_df = pd.DataFrame(reports)
 
                 search = st.text_input(
-                    "🔍 Search Report",
+                    "ðŸ” Search Report",
                     placeholder="Search by report name...",
                     key="patient_report_search",
                 )
@@ -373,7 +373,7 @@ def patient_detail_page():
 
                 st.dataframe(
                     report_df[columns],
-                    use_container_width=True,
+                    width="stretch",
                     hide_index=True,
                 )
 
@@ -401,10 +401,10 @@ def patient_detail_page():
                 with left:
 
                     if st.button(
-                        "🤖 Generate AI Summary",
+                        "ðŸ¤– Generate AI Summary",
                         key="generate_ai_summary",
                         type="primary",
-                        use_container_width=True,
+                        width="stretch",
                     ):
 
                         with st.spinner(
@@ -461,12 +461,12 @@ def patient_detail_page():
                     )
 
                     st.download_button(
-                        "📥 Download Metadata",
+                        "ðŸ“¥ Download Metadata",
                         data=metadata,
                         file_name=f"{report.get('report_name','report')}.csv",
                         mime="text/csv",
                         key="download_report_metadata",
-                        use_container_width=True,
+                        width="stretch",
                     )
 
                 st.divider()
@@ -475,7 +475,7 @@ def patient_detail_page():
                 # Report Details
                 # ==========================================
 
-                st.subheader("📋 Report Details")
+                st.subheader("ðŸ“‹ Report Details")
 
                 c1, c2 = st.columns(2)
 
@@ -556,7 +556,7 @@ def patient_detail_page():
                     st.divider()
 
                     st.subheader(
-                        "🧠 Existing AI Summary"
+                        "ðŸ§  Existing AI Summary"
                     )
 
                     st.text_area(
@@ -575,7 +575,7 @@ def patient_detail_page():
 
     with tab2:
 
-        st.subheader("🕒 Medical Timeline")
+        st.subheader("ðŸ•’ Medical Timeline")
 
         with st.spinner("Loading timeline..."):
 
@@ -616,7 +616,7 @@ def patient_detail_page():
 
                         st.markdown(
                             f"""
-### 📄 {event.get("report_name","Unknown Report")}
+### ðŸ“„ {event.get("report_name","Unknown Report")}
 
 **Type:** {event.get("report_type","N/A")}
 
@@ -629,7 +629,7 @@ def patient_detail_page():
                         if event.get("summary"):
 
                             with st.expander(
-                                f"🤖 AI Summary #{index}"
+                                f"ðŸ¤– AI Summary #{index}"
                             ):
 
                                 st.write(
@@ -648,7 +648,7 @@ def patient_detail_page():
     with tab3:
 
         st.subheader(
-            "🤖 AI Patient History Assistant"
+            "ðŸ¤– AI Patient History Assistant"
         )
 
         st.info(
@@ -663,10 +663,10 @@ def patient_detail_page():
         )
 
         if st.button(
-            "🧠 Ask AI",
+            "ðŸ§  Ask AI",
             key="ask_patient_ai",
             type="primary",
-            use_container_width=True,
+            width="stretch",
         ):
 
             if not question.strip():
@@ -718,7 +718,7 @@ def patient_detail_page():
         st.divider()
 
         st.subheader(
-            "💡 Suggested Questions"
+            "ðŸ’¡ Suggested Questions"
         )
 
         suggestions = [
@@ -734,14 +734,14 @@ def patient_detail_page():
 
         for suggestion in suggestions:
 
-            st.markdown(f"• {suggestion}")
+            st.markdown(f"â€¢ {suggestion}")
     # =====================================================
     # ACTIONS
     # =====================================================
 
     st.divider()
 
-    st.subheader("⚙️ Patient Actions")
+    st.subheader("âš™ï¸ Patient Actions")
 
     col1, col2 = st.columns(2)
 
@@ -757,9 +757,9 @@ def patient_detail_page():
         )
 
         if st.button(
-            "🗑 Delete Patient",
+            "ðŸ—‘ Delete Patient",
             key="delete_patient_button",
-            use_container_width=True,
+            width="stretch",
         ):
 
             if not confirm_delete:
@@ -781,7 +781,7 @@ def patient_detail_page():
                 if response.status_code == 200:
 
                     st.success(
-                        "✅ Patient deleted successfully."
+                        "âœ… Patient deleted successfully."
                     )
 
                     st.rerun()
@@ -807,9 +807,9 @@ def patient_detail_page():
     with col2:
 
         if st.button(
-            "🔄 Refresh Data",
+            "ðŸ”„ Refresh Data",
             key="refresh_patient_data",
-            use_container_width=True,
+            width="stretch",
         ):
 
             st.rerun()
@@ -820,7 +820,7 @@ def patient_detail_page():
 
     st.divider()
 
-    st.subheader("📋 Quick Summary")
+    st.subheader("ðŸ“‹ Quick Summary")
 
     summary = f"""
 Patient Name : {full_name}
@@ -848,12 +848,12 @@ Created : {created_at[:10] if created_at else "N/A"}
     # =====================================================
 
     st.download_button(
-        "📥 Export Patient Details",
+        "ðŸ“¥ Export Patient Details",
         data=summary,
         file_name=f"{patient_code}.txt",
         mime="text/plain",
         key="export_patient_details",
-        use_container_width=True,
+        width="stretch",
     )
 
     # =====================================================
@@ -863,5 +863,5 @@ Created : {created_at[:10] if created_at else "N/A"}
     st.divider()
 
     st.caption(
-        "🏥 MegNova AI • Patient Details Module • Version 1.0"
+        "ðŸ¥ MegNova AI â€¢ Patient Details Module â€¢ Version 1.0"
     )

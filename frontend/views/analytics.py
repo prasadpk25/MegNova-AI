@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 import plotly.express as px
 
@@ -12,13 +12,13 @@ from utils.api_client import get
 def analytics_page():
     """Hospital Analytics Dashboard"""
 
-    st.title("📊 Hospital Analytics Dashboard")
+    st.title("ðŸ“Š Hospital Analytics Dashboard")
     st.caption("Real-time insights for MegNova AI")
 
     if st.button(
-        "🔄 Refresh Dashboard",
+        "ðŸ”„ Refresh Dashboard",
         key="analytics_refresh",
-        use_container_width=True,
+        width="stretch",
     ):
         st.rerun()
 
@@ -79,7 +79,7 @@ def analytics_page():
 
     st.divider()
 
-    st.subheader("📈 Overview")
+    st.subheader("ðŸ“ˆ Overview")
 
     c1, c2, c3 = st.columns(3)
 
@@ -114,7 +114,7 @@ def analytics_page():
 
     with col1:
 
-        st.subheader("🏥 Doctors by Department")
+        st.subheader("ðŸ¥ Doctors by Department")
 
         if not departments.empty:
 
@@ -133,7 +133,7 @@ def analytics_page():
 
             st.plotly_chart(
                 fig,
-                use_container_width=True,
+                width="stretch",
             )
 
         else:
@@ -146,7 +146,7 @@ def analytics_page():
 
     with col2:
 
-        st.subheader("📄 Report Types")
+        st.subheader("ðŸ“„ Report Types")
 
         if not report_types.empty:
 
@@ -163,7 +163,7 @@ def analytics_page():
 
             st.plotly_chart(
                 fig,
-                use_container_width=True,
+                width="stretch",
             )
 
         else:
@@ -176,7 +176,7 @@ def analytics_page():
 
     st.divider()
 
-    st.subheader("👨‍⚕️ Doctor Specializations")
+    st.subheader("ðŸ‘¨â€âš•ï¸ Doctor Specializations")
 
     if not specializations.empty:
 
@@ -195,7 +195,7 @@ def analytics_page():
 
         st.plotly_chart(
             fig,
-            use_container_width=True,
+            width="stretch",
         )
 
     else:
@@ -208,13 +208,13 @@ def analytics_page():
 
     st.divider()
 
-    st.subheader("📋 Analytics Data")
+    st.subheader("ðŸ“‹ Analytics Data")
 
     st.markdown("#### Departments")
 
     st.dataframe(
         departments,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -222,7 +222,7 @@ def analytics_page():
 
     st.dataframe(
         specializations,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -230,7 +230,7 @@ def analytics_page():
 
     st.dataframe(
         report_types,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -262,10 +262,10 @@ def analytics_page():
     csv = export.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        label="📥 Download Analytics",
+        label="ðŸ“¥ Download Analytics",
         data=csv,
         file_name="analytics.csv",
         mime="text/csv",
         key="download_analytics",
-        use_container_width=True,
+        width="stretch",
     )

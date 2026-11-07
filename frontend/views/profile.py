@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 
 from utils.api_client import get
 
@@ -10,13 +10,13 @@ from utils.api_client import get
 def profile_page():
     """User Profile Page"""
 
-    st.title("👤 My Profile")
+    st.title("ðŸ‘¤ My Profile")
     st.caption("Manage your MegNova AI account.")
 
     if st.button(
-        "🔄 Refresh",
+        "ðŸ”„ Refresh",
         key="profile_refresh",
-        use_container_width=True,
+        width="stretch",
     ):
         st.rerun()
 
@@ -74,9 +74,9 @@ def profile_page():
         st.write(email)
 
         if is_active:
-            st.success(f"🟢 {role.upper()}")
+            st.success(f"ðŸŸ¢ {role.upper()}")
         else:
-            st.error("🔴 ACCOUNT DISABLED")
+            st.error("ðŸ”´ ACCOUNT DISABLED")
 
     st.divider()
 
@@ -114,10 +114,10 @@ def profile_page():
 
     personal_tab, security_tab, stats_tab, export_tab = st.tabs(
         [
-            "👤 Personal",
-            "🔐 Security",
-            "📊 Statistics",
-            "📥 Export",
+            "ðŸ‘¤ Personal",
+            "ðŸ” Security",
+            "ðŸ“Š Statistics",
+            "ðŸ“¥ Export",
         ]
     )
 
@@ -208,9 +208,9 @@ def profile_page():
         )
 
         if st.button(
-            "🔐 Update Password",
+            "ðŸ” Update Password",
             key="update_password",
-            use_container_width=True,
+            width="stretch",
         ):
 
             if not current_password:
@@ -295,14 +295,14 @@ Status       : {"Active" if is_active else "Inactive"}
         )
 
         st.download_button(
-            label="📥 Download Profile",
+            label="ðŸ“¥ Download Profile",
             data=profile_text.encode("utf-8"),
             file_name="profile.txt",
             mime="text/plain",
             key="download_profile",
-            use_container_width=True,
+            width="stretch",
         )
 
     st.divider()
 
-    st.caption("MegNova AI • AI Hospital Digital Twin")
+    st.caption("MegNova AI â€¢ AI Hospital Digital Twin")

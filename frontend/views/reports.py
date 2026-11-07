@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import streamlit as st
 
 from utils.api_client import delete, get, post
@@ -64,7 +64,7 @@ def load_doctors():
 def upload_section(patient_dict, doctor_dict):
     """Upload a medical report."""
 
-    st.subheader("📤 Upload Medical Report")
+    st.subheader("ðŸ“¤ Upload Medical Report")
 
     if not patient_dict:
         st.warning("No patients available. Please add a patient first.")
@@ -122,8 +122,8 @@ def upload_section(patient_dict, doctor_dict):
         )
 
         submit = st.form_submit_button(
-            "📤 Upload Report",
-            use_container_width=True,
+            "ðŸ“¤ Upload Report",
+            width="stretch",
         )
 
     if not submit:
@@ -161,7 +161,7 @@ def upload_section(patient_dict, doctor_dict):
         )
 
     if response.status_code in (200, 201):
-        st.success("✅ Medical report uploaded successfully.")
+        st.success("âœ… Medical report uploaded successfully.")
         st.rerun()
 
     try:
@@ -230,9 +230,9 @@ def metrics_section(df):
 
     c1, c2, c3 = st.columns(3)
 
-    c1.metric("📄 Reports", total)
-    c2.metric("🤖 AI Summaries", summarized)
-    c3.metric("⏳ Pending", pending)
+    c1.metric("ðŸ“„ Reports", total)
+    c2.metric("ðŸ¤– AI Summaries", summarized)
+    c3.metric("â³ Pending", pending)
 
 
 # ==========================================================
@@ -242,14 +242,14 @@ def metrics_section(df):
 def filter_reports(df):
     """Search and filter reports."""
 
-    st.subheader("🔍 Search & Filter")
+    st.subheader("ðŸ” Search & Filter")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         search = st.text_input(
-            "🔍 Search Reports",
+            "ðŸ” Search Reports",
             placeholder="Search report, patient or doctor...",
             key="reports_search",
         )
@@ -319,7 +319,7 @@ def filter_reports(df):
 def reports_table(df):
     """Display reports table."""
 
-    st.subheader("📋 Uploaded Reports")
+    st.subheader("ðŸ“‹ Uploaded Reports")
 
     if df.empty:
         st.info("No reports match the selected filters.")
@@ -341,7 +341,7 @@ def reports_table(df):
     st.dataframe(
         display,
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
 
     col1, col2 = st.columns(2)
@@ -349,19 +349,19 @@ def reports_table(df):
     with col1:
 
         st.download_button(
-            "📥 Download CSV",
+            "ðŸ“¥ Download CSV",
             display.to_csv(index=False),
             file_name="reports.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     with col2:
 
         if st.button(
-            "🔄 Refresh",
+            "ðŸ”„ Refresh",
             key="refresh_reports_btn",
-            use_container_width=True,
+            width="stretch",
         ):
             st.rerun()
 
@@ -379,7 +379,7 @@ def ai_summary_section(df):
         st.info("No reports available.")
         return
 
-    st.subheader("🤖 AI Medical Summary")
+    st.subheader("ðŸ¤– AI Medical Summary")
 
     report_options = {
         f'{row["ID"]} - {row["Report"]}': row["ReportID"]
@@ -403,9 +403,9 @@ def ai_summary_section(df):
     with col1:
 
         if st.button(
-            "🧠 Generate AI Summary",
+            "ðŸ§  Generate AI Summary",
             key="generate_summary_btn",
-            use_container_width=True,
+            width="stretch",
         ):
 
             with st.spinner("Generating AI Summary..."):
@@ -417,7 +417,7 @@ def ai_summary_section(df):
             if response.status_code == 200:
 
                 st.success(
-                    "✅ AI Summary generated successfully."
+                    "âœ… AI Summary generated successfully."
                 )
 
                 st.rerun()
@@ -442,11 +442,11 @@ def ai_summary_section(df):
         )
 
         if st.button(
-            "🗑 Delete Report",
+            "ðŸ—‘ Delete Report",
             key="delete_report_btn",
             type="secondary",
             disabled=not confirm_delete,
-            use_container_width=True,
+            width="stretch",
         ):
 
             response = delete(
@@ -456,7 +456,7 @@ def ai_summary_section(df):
             if response.status_code == 200:
 
                 st.success(
-                    "✅ Report deleted successfully."
+                    "âœ… Report deleted successfully."
                 )
 
                 st.rerun()
@@ -473,7 +473,7 @@ def ai_summary_section(df):
     # Summary Viewer
     # =====================================
 
-    st.subheader("📑 AI Summary")
+    st.subheader("ðŸ“‘ AI Summary")
 
     summary = selected_row["SummaryText"]
 
@@ -499,7 +499,7 @@ def ai_summary_section(df):
     # Report Details
     # =====================================
 
-    st.subheader("📋 Report Details")
+    st.subheader("ðŸ“‹ Report Details")
 
     left, right = st.columns(2)
 
@@ -533,7 +533,7 @@ def ai_summary_section(df):
 def reports_page():
     """Medical Reports Page"""
 
-    st.title("📄 Medical Reports")
+    st.title("ðŸ“„ Medical Reports")
     st.caption(
         "Upload, manage and summarize patient medical reports."
     )

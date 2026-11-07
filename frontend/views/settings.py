@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 
 
 # ==========================================================
@@ -8,7 +8,7 @@ import streamlit as st
 def settings_page():
     """MegNova AI Settings"""
 
-    st.title("⚙️ Settings")
+    st.title("âš™ï¸ Settings")
     st.caption("Configure MegNova AI preferences and system settings.")
 
     st.divider()
@@ -17,7 +17,7 @@ def settings_page():
     # Appearance
     # =====================================================
 
-    st.subheader("🎨 Appearance")
+    st.subheader("ðŸŽ¨ Appearance")
 
     col1, col2 = st.columns(2)
 
@@ -52,7 +52,7 @@ def settings_page():
     # AI Configuration
     # =====================================================
 
-    st.subheader("🤖 AI Configuration")
+    st.subheader("ðŸ¤– AI Configuration")
 
     model = st.selectbox(
         "LLM Model",
@@ -92,7 +92,7 @@ def settings_page():
     # OCR Configuration
     # =====================================================
 
-    st.subheader("📄 OCR Configuration")
+    st.subheader("ðŸ“„ OCR Configuration")
 
     language = st.selectbox(
         "OCR Language",
@@ -116,7 +116,7 @@ def settings_page():
     # Backend Configuration
     # =====================================================
 
-    st.subheader("🌐 Backend Configuration")
+    st.subheader("ðŸŒ Backend Configuration")
 
     backend = st.text_input(
         "Backend URL",
@@ -139,7 +139,7 @@ def settings_page():
     # System Information
     # =====================================================
 
-    st.subheader("ℹ️ System Information")
+    st.subheader("â„¹ï¸ System Information")
 
     info1, info2 = st.columns(2)
 
@@ -170,16 +170,16 @@ def settings_page():
     # =====================================================
 
     if st.button(
-        "💾 Save Settings",
+        "ðŸ’¾ Save Settings",
         key="settings_save",
         type="primary",
-        use_container_width=True,
+        width="stretch",
     ):
 
         st.success(
-            "✅ Settings saved successfully. (Currently stored locally)"
+            "âœ… Settings saved successfully. (Currently stored locally)"
         )
 
     st.divider()
 
-    st.caption("MegNova AI • AI Hospital Digital Twin")
+    st.caption("MegNova AI â€¢ AI Hospital Digital Twin")

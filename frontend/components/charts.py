@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import plotly.express as px
 
 
@@ -25,7 +25,7 @@ def department_chart(df):
         height=400,
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 
 def status_chart(df):
@@ -48,4 +48,4 @@ def status_chart(df):
         height=400,
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")

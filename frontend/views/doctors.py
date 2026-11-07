@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import streamlit as st
 
 from utils.api_client import get, post
@@ -8,7 +8,7 @@ from utils.helpers import handle_response
 def doctors_page():
     """Doctor Management Page"""
 
-    st.title("👨‍⚕️ Doctor Management")
+    st.title("ðŸ‘¨â€âš•ï¸ Doctor Management")
     st.caption("Register and manage hospital doctors.")
 
     st.divider()
@@ -17,7 +17,7 @@ def doctors_page():
     # Register Doctor
     # =====================================================
 
-    st.subheader("➕ Register Doctor")
+    st.subheader("âž• Register Doctor")
 
     with st.form(
         "doctor_form",
@@ -83,8 +83,8 @@ def doctors_page():
             )
 
         submit = st.form_submit_button(
-            "➕ Add Doctor",
-            use_container_width=True,
+            "âž• Add Doctor",
+            width="stretch",
         )
 
     # =====================================================
@@ -140,7 +140,7 @@ def doctors_page():
             if data:
 
                 st.success(
-                    "✅ Doctor added successfully."
+                    "âœ… Doctor added successfully."
                 )
 
                 st.rerun()
@@ -151,7 +151,7 @@ def doctors_page():
     # Doctor List
     # =====================================================
 
-    st.subheader("📋 Doctors")
+    st.subheader("ðŸ“‹ Doctors")
 
     with st.spinner(
         "Loading doctors..."
@@ -177,7 +177,7 @@ def doctors_page():
     with left:
 
         search = st.text_input(
-            "🔍 Search Doctor",
+            "ðŸ” Search Doctor",
             placeholder="Search by doctor's name...",
             key="doctor_search",
         )
@@ -242,17 +242,17 @@ def doctors_page():
     c1, c2, c3 = st.columns(3)
 
     c1.metric(
-        "👨‍⚕️ Total",
+        "ðŸ‘¨â€âš•ï¸ Total",
         total,
     )
 
     c2.metric(
-        "🟢 Available",
+        "ðŸŸ¢ Available",
         available,
     )
 
     c3.metric(
-        "🔴 Busy",
+        "ðŸ”´ Busy",
         busy,
     )
 
@@ -279,7 +279,7 @@ def doctors_page():
 
     st.dataframe(
         filtered[display_columns],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -298,20 +298,20 @@ def doctors_page():
         )
 
         st.download_button(
-            "📥 Download CSV",
+            "ðŸ“¥ Download CSV",
             data=csv,
             file_name="doctors.csv",
             mime="text/csv",
             key="download_doctors_csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     with right:
 
         if st.button(
-            "🔄 Refresh",
+            "ðŸ”„ Refresh",
             key="refresh_doctors",
-            use_container_width=True,
+            width="stretch",
         ):
 
             st.rerun()

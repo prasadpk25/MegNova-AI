@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 from streamlit_option_menu import option_menu
 
 
@@ -15,7 +15,7 @@ def sidebar():
             st.markdown(
                 """
                 <div style="text-align:center;padding:10px;">
-                    <h1>🏥</h1>
+                    <h1>ðŸ¥</h1>
                     <h2>MegNova AI</h2>
                     <p>AI Hospital Digital Twin</p>
                 </div>
@@ -39,7 +39,7 @@ def sidebar():
                 "Doctor",
             )
 
-            st.success(f"🟢 {user_name}")
+            st.success(f"ðŸŸ¢ {user_name}")
             st.caption(user_role)
 
             st.divider()
@@ -81,17 +81,17 @@ def sidebar():
 
             st.divider()
 
-            st.markdown("### 🖥️ Services")
+            st.markdown("### ðŸ–¥ï¸ Services")
 
-            st.success("✅ FastAPI")
-            st.success("✅ PostgreSQL")
-            st.success("✅ AI Online")
+            st.success("âœ… FastAPI")
+            st.success("âœ… PostgreSQL")
+            st.success("âœ… AI Online")
 
             st.divider()
 
             if st.button(
-                "🚪 Logout",
-                use_container_width=True,
+                "ðŸšª Logout",
+                width="stretch",
                 key="logout_button",
             ):
                 st.session_state.clear()

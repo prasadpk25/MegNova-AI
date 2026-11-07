@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import streamlit as st
 
 from utils.api_client import get
@@ -8,7 +8,7 @@ from utils.helpers import handle_response
 def patients_page():
     """Patient Management Page"""
 
-    st.title("👥 Patient Management")
+    st.title("ðŸ‘¥ Patient Management")
     st.caption("View and manage registered patients.")
 
     st.divider()
@@ -56,7 +56,7 @@ def patients_page():
 
     with col1:
         search = st.text_input(
-            "🔍 Search Patient",
+            "ðŸ” Search Patient",
             placeholder="Search by Patient ID or Name",
         )
 
@@ -90,9 +90,9 @@ def patients_page():
 
     c1, c2, c3 = st.columns(3)
 
-    c1.metric("👥 Total Patients", total)
-    c2.metric("🟢 Active", active)
-    c3.metric("🔴 Inactive", inactive)
+    c1.metric("ðŸ‘¥ Total Patients", total)
+    c2.metric("ðŸŸ¢ Active", active)
+    c3.metric("ðŸ”´ Inactive", inactive)
 
     st.divider()
 
@@ -115,8 +115,8 @@ def patients_page():
 
     display_df["Status"] = display_df["is_active"].map(
         {
-            True: "🟢 Active",
-            False: "🔴 Inactive",
+            True: "ðŸŸ¢ Active",
+            False: "ðŸ”´ Inactive",
         }
     )
 
@@ -135,12 +135,12 @@ def patients_page():
         inplace=True,
     )
 
-    st.subheader("📋 Patient Records")
+    st.subheader("ðŸ“‹ Patient Records")
 
     st.dataframe(
         display_df,
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
 
     st.divider()
@@ -153,17 +153,17 @@ def patients_page():
 
     with col1:
         st.download_button(
-            "📥 Download CSV",
+            "ðŸ“¥ Download CSV",
             display_df.to_csv(index=False),
             file_name="patients.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     with col2:
         if st.button(
-            "🔄 Refresh",
-            use_container_width=True,
+            "ðŸ”„ Refresh",
+            width="stretch",
         ):
             st.rerun()
 

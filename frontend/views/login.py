@@ -1,147 +1,108 @@
+﻿
 import streamlit as st
 
 from utils.api import login
 
 
 def login_page():
-    """User Login Page"""
+    """MegNova AI Login Page"""
 
-    # =====================================================
-    # Header
-    # =====================================================
-
-    st.title("🏥 MegNova AI")
-    st.caption("AI-Powered Hospital Digital Twin")
+    st.set_page_config(
+        page_title="MegNova AI | Login",
+        page_icon="ðŸ¥",
+        layout="centered",
+    )
 
     st.markdown(
         """
-### 🔐 Secure Clinical Decision Support System
+        <style>
+        .block-container {
+            max-width: 520px;
+            padding-top: 5rem;
+        }
+        .login-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-Login to access patients, reports, AI assistant,
-analytics, and hospital management tools.
-"""
+    st.markdown(
+        "<h1 style='text-align:center;'>ðŸ¥ MegNova AI</h1>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        "<p class='login-subtitle'>AI-Powered Hospital Digital Twin</p>",
+        unsafe_allow_html=True,
     )
 
     st.divider()
 
-    # =====================================================
-    # Login Form
-    # =====================================================
+    st.subheader("Welcome back")
+    st.caption("Sign in to access your hospital workspace.")
 
-    with st.form(
-        "login_form",
-        clear_on_submit=False,
-    ):
-
+    with st.form("megnova_login_form"):
         email = st.text_input(
-            "📧 Email",
-            placeholder="doctor@hospital.com",
-            key="login_email",
+            "Email address",
+            placeholder="Enter your registered email",
         )
 
         password = st.text_input(
-            "🔒 Password",
+            "Password",
             type="password",
             placeholder="Enter your password",
-            key="login_password",
-        )
-
-        remember = st.checkbox(
-            "Remember Me",
-            key="remember_me_checkbox",
         )
 
         submitted = st.form_submit_button(
-            "🔐 Login",
-            use_container_width=True,
+            "Sign in",
+            width="stretch",
+            type="primary",
         )
 
-    # =====================================================
-    # Login
-    # =====================================================
-
     if submitted:
-
-        email = email.strip()
-        password = password.strip()
-
-        if not email:
-
-            st.warning("Please enter your email address.")
+        if not email.strip() or not password:
+            st.warning("Please enter your email and password.")
             return
 
-        if not password:
+        try:
+            response = login(email.strip(), password)
 
-            st.warning("Please enter your password.")
-            return
+            if response.status_code == 200:
+                data = response.json()
+                token = data.get("access_token")
 
-        with st.spinner("Authenticating..."):
+                if not token:
+                    st.error("Login response did not contain an access token.")
+                    return
 
-            try:
+                st.session_state["access_token"] = token
+                st.session_state["logged_in"] = True
 
-                response = login(
-                    email,
-                    password,
-                )
+                st.session_state["user"] = {
+                    "email": email.strip()
+                }
 
-                if response.status_code == 200:
+                st.session_state["user_name"] = email.split("@")[0]
 
-                    data = response.json()
+                st.success("Login successful!")
+                st.rerun()
 
-                    st.session_state.logged_in = True
+            elif response.status_code in (400, 401, 403):
+                st.error("Invalid email or password.")
 
-                    st.session_state.access_token = data.get(
-                        "access_token",
-                        "",
-                    )
+            else:
+                st.error(f"Login failed: HTTP {response.status_code}")
 
-                    st.session_state.user_name = data.get(
-                        "full_name",
-                        "Doctor",
-                    )
-
-                    st.session_state.user_role = data.get(
-                        "role",
-                        "Doctor",
-                    )
-
-                    st.session_state.remember_me = remember
-
-                    st.success(
-                        "✅ Login successful."
-                    )
-
-                    st.rerun()
-
-                else:
-
-                    try:
-
-                        message = response.json().get(
-                            "detail",
-                            "Invalid email or password.",
-                        )
-
-                    except Exception:
-
-                        message = (
-                            "Invalid email or password."
-                        )
-
-                    st.error(message)
-
-            except Exception:
-
-                st.error(
-                    "Unable to connect to the server. Please try again later."
-                )
-
-    # =====================================================
-    # Footer
-    # =====================================================
+        except Exception as error:
+            st.error(f"Unable to connect to the backend: {error}")
 
     st.divider()
 
     st.caption(
-        "🏥 MegNova AI • AI Hospital Digital Twin • Version 1.0"
+        "MegNova AI Â© 2026 | Clinical Decision Support Platform"
     )
+

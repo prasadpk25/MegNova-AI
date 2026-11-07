@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 
 
 def dashboard_page():
@@ -8,7 +8,7 @@ def dashboard_page():
     # Header
     # =====================================================
 
-    st.title("🏥 MegNova AI Dashboard")
+    st.title("ðŸ¥ MegNova AI Dashboard")
     st.caption("AI-Powered Hospital Digital Twin")
 
     st.divider()
@@ -24,7 +24,7 @@ def dashboard_page():
 
     st.markdown(
         f"""
-## Welcome, **{user_name}** 👋
+## Welcome, **{user_name}** ðŸ‘‹
 
 Monitor hospital operations, manage patients, analyze medical reports,
 and interact with the AI Medical Assistant from one unified dashboard.
@@ -43,10 +43,10 @@ and interact with the AI Medical Assistant from one unified dashboard.
     ai_queries = 421
 
     metric_data = [
-        ("👨‍⚕️ Doctors", doctor_count, "+2"),
-        ("🧑 Patients", patient_count, "+12"),
-        ("📄 Reports", report_count, "+25"),
-        ("🤖 AI Queries", ai_queries, "+31"),
+        ("ðŸ‘¨â€âš•ï¸ Doctors", doctor_count, "+2"),
+        ("ðŸ§‘ Patients", patient_count, "+12"),
+        ("ðŸ“„ Reports", report_count, "+25"),
+        ("ðŸ¤– AI Queries", ai_queries, "+31"),
     ]
 
     cols = st.columns(4)
@@ -69,26 +69,26 @@ and interact with the AI Medical Assistant from one unified dashboard.
     # Quick Actions
     # =====================================================
 
-    st.subheader("⚡ Quick Actions")
+    st.subheader("âš¡ Quick Actions")
 
     actions = [
         (
-            "➕ Add Patient",
+            "âž• Add Patient",
             "Open Patients page from the sidebar.",
             "dashboard_add_patient",
         ),
         (
-            "📤 Upload Report",
+            "ðŸ“¤ Upload Report",
             "Open Reports page from the sidebar.",
             "dashboard_upload_report",
         ),
         (
-            "🤖 Open AI Assistant",
+            "ðŸ¤– Open AI Assistant",
             "Open AI Assistant from the sidebar.",
             "dashboard_ai_assistant",
         ),
         (
-            "📊 Analytics",
+            "ðŸ“Š Analytics",
             "Open Analytics page from the sidebar.",
             "dashboard_analytics",
         ),
@@ -105,7 +105,7 @@ and interact with the AI Medical Assistant from one unified dashboard.
             if st.button(
                 title,
                 key=key,
-                use_container_width=True,
+                width="stretch",
             ):
 
                 st.info(message)
@@ -116,7 +116,7 @@ and interact with the AI Medical Assistant from one unified dashboard.
     # Recent Activity
     # =====================================================
 
-    st.subheader("🕒 Recent Activity")
+    st.subheader("ðŸ•’ Recent Activity")
 
     activities = [
         "Patient MR000145 admitted",
@@ -128,7 +128,7 @@ and interact with the AI Medical Assistant from one unified dashboard.
 
     for activity in activities:
 
-        st.markdown(f"• {activity}")
+        st.markdown(f"â€¢ {activity}")
 
     st.divider()
 
@@ -154,19 +154,19 @@ and interact with the AI Medical Assistant from one unified dashboard.
 
     with left:
 
-        st.subheader("🤖 AI Services")
+        st.subheader("ðŸ¤– AI Services")
 
         for service in ai_services:
 
-            st.success(f"✅ {service}")
+            st.success(f"âœ… {service}")
 
     with right:
 
-        st.subheader("🖥️ System Status")
+        st.subheader("ðŸ–¥ï¸ System Status")
 
         for service in system_services:
 
-            st.success(f"🟢 {service}")
+            st.success(f"ðŸŸ¢ {service}")
 
     st.divider()
 
@@ -175,5 +175,5 @@ and interact with the AI Medical Assistant from one unified dashboard.
     # =====================================================
 
     st.caption(
-        "🏥 MegNova AI • AI Hospital Digital Twin • Version 1.0"
+        "ðŸ¥ MegNova AI â€¢ AI Hospital Digital Twin â€¢ Version 1.0"
     )
