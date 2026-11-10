@@ -1,11 +1,11 @@
-from qdrant_client import QdrantClient
+from App.qdrant_connection import client
 from qdrant_client.models import (
     Distance,
     PointStruct,
     VectorParams,
 )
 
-client = QdrantClient(path="App/qdrant_db")
+
 
 COLLECTION_NAME = "medical_reports"
 VECTOR_SIZE = 384

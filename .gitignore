@@ -57,3 +57,10 @@ desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# MegNova local Qdrant databases
+backend/App/qdrant_db/
+backend/backend/
+
+# Local migration utility
+backend/migrate_qdrant.py

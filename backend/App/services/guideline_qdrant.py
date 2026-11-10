@@ -1,11 +1,7 @@
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client.models import VectorParams, Distance, PointStruct
 import uuid
 
-from pathlib import Path
-
-DB_PATH = str(Path(__file__).resolve().parents[2] / "qdrant_db")
-client = QdrantClient(path=DB_PATH)
+from App.qdrant_connection import client
 
 COLLECTION_NAME = "clinical_guidelines"
 
